@@ -1052,31 +1052,29 @@
       const [note, setNote] = React.useState(initialData?.note || "");
       const [errors, setErrors] = React.useState({});
       const [analyzing, setAnalyzing] = React.useState(false);
+      const [analyzeError, setAnalyzeError] = React.useState("");
 
       const handleAnalyze = async () => {
         if (!mapLink.trim()) return;
         setAnalyzing(true);
+        setAnalyzeError("");
         try {
-          const prompt = `任務：從指定的 Google Maps 網址提取店家資料。網址：${mapLink}。輸出必須回傳純 JSON，不含 Markdown。category 必須只從這份清單選一個最接近的值：${CATS.join("、")}。格式：{"name": "店名", "category": "類型", "district": "行政區", "rating": "評分", "openHours": "週一: 11:00-14:30...格式的一週時間", "note": "簡介"}`;
-          const res = await fetchWithRetry(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`, {
+          const res = await fetchWithRetry("https://api-taipei-food.xmoneydoge.com/analyze", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              contents: [{ parts: [{ text: prompt }] }],
-              tools: [{ google_search: {} }],
-              generationConfig: { responseMimeType: "application/json" },
-            }),
+            body: JSON.stringify({ url: mapLink }),
           });
-          const content = JSON.parse(res.candidates[0].content.parts[0].text);
-          if (content.name) setName(content.name);
-          const aiCategory = normalizeCategory(content.category);
+          if (res.error) throw new Error(res.error);
+          if (res.name) setName(res.name);
+          const aiCategory = normalizeCategory(res.category);
           if (aiCategory) setCategory(aiCategory);
-          if (content.district && DISTS.includes(content.district)) setDistrict(content.district);
-          if (content.rating) setRating(parseFloat(content.rating).toFixed(1));
-          if (content.openHours) setOpenHours(content.openHours);
-          if (content.note) setNote(content.note);
+          if (res.district && DISTS.includes(res.district)) setDistrict(res.district);
+          if (res.rating) setRating(parseFloat(res.rating).toFixed(1));
+          if (res.openHours) setOpenHours(res.openHours);
+          if (res.note) setNote(res.note);
         } catch (e) {
           console.error(e);
+          setAnalyzeError(e.message || "解析失敗，請確認後端是否啟動");
         } finally {
           setAnalyzing(false);
         }
@@ -1172,6 +1170,9 @@
                   {analyzing ? <Loader2 s={14} /> : "解析"}
                 </button>
               </div>
+              {analyzeError && (
+                <div style={{ color: "var(--red)", fontSize: 12, marginTop: -10, marginBottom: 10 }}>{analyzeError}</div>
+              )}
               <input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
