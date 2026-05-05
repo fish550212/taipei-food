@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
+  <title>大台北 Food 口袋名單</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;900&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:       #181818;
+      --bg2:      #222222;
+      --card:     #FFFFFF;
+      --card2:    #F9F6F2;
+      --red:      #E8272A;
+      --red-dk:   #C41E21;
+      --red-lt:   #FFF0F0;
+      --black:    #111111;
+      --t1:       #111111;
+      --t2:       #555555;
+      --t3:       #999999;
+      --border:   rgba(0,0,0,0.08);
+      --green:    #16A34A;
+      --green-lt: #F0FDF4;
+      --amber:    #D97706;
+      --r-sm:8px; --r-md:14px; --r-lg:20px; --r-xl:28px;
+      --sh:0 2px 12px rgba(0,0,0,0.08);
+      --sh-md:0 6px 24px rgba(0,0,0,0.12);
+      --sh-lg:0 20px 60px rgba(0,0,0,0.18);
+    }
+    html,body{height:100%;background:var(--bg)}
+    body{font-family:'DM Sans','Noto Sans TC',-apple-system,sans-serif;color:var(--t1);-webkit-font-smoothing:antialiased}
+    #root{min-height:100vh}
+    input,button,textarea,select{font-family:inherit}
+    ::-webkit-scrollbar{width:4px;height:4px}
+    ::-webkit-scrollbar-track{background:transparent}
+    ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.15);border-radius:99px}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+    @keyframes slideUp{from{opacity:0;transform:translateY(24px) scale(0.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+  </style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const GAS_URL = "https://script.google.com/macros/s/AKfycbzwgWiK7NPt9mykjmZMAg7C6SDxzPHh00oJVpCBQIX7UlOjuhMSCdhdgyF7jcZHlLu19w/exec";
+const LS_KEY = "taipei_food_db_cache_v14_layout_aligned";
+const modelName = "gemini-2.5-flash-preview-09-2025";
+const apiKey = "";
+
+const DAY_NAMES = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+
+/** --- 核心圖示 --- **/
+const PinIc=({s=13})=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0}}><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>;
+const StarIc=({s=12,f=false})=><svg width={s} height={s} viewBox="0 0 24 24" fill={f?"currentColor":"none"} stroke="currentColor" strokeWidth={f?0:2} style={{flexShrink:0}}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>;
+const EditIc=({s=14})=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0}}><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>;
+const TrashIc=({s=14})=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0}}><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>;
+const XIc=({s=15})=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" style={{flexShrink:0}}><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>;
+const Loader2 = ({s=16}) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{animation:"spin 1s linear infinite", flexShrink:0}}><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>;
+const SearchIc=({s=16})=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" style={{flexShrink:0}}><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>;
+const SparkIc=({s=16})=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0}}><path d="M12 3l1.91 5.89L20 10.8l-4.59 4.11L16.32 21 12 18.11 7.68 21l.91-6.09L4 10.8l6.09-1.91L12 3z"/></svg>;
+const GridIc = ({ s = 16 }) => (<svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0}}><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>);
+const ListIc = ({ s = 16 }) => (<svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0}}><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>);
+const ChevronDown = ({ s = 12 }) => (<svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0}}><path d="M6 9l6 6 6-6" /></svg>);
+
+/** --- 基礎 UI 元件 (Hoisted) --- **/
+function Stars({rating, s=12}){
+  const r = Math.round(parseFloat(rating) || 0);
+  return <span style={{display:"flex", gap:1, color:"var(--amber)"}}>{[1,2,3,4,5].map(i=><StarIc key={i} s={s} f={i<=r}/>)}</span>;
+}
+
+function StatusPill({isOpen}){
+  return(
+    <span style={{
+      display:"inline-flex", alignItems:"center", gap:4, padding:"3px 10px", borderRadius:99, fontSize:11, fontWeight:600,
+      background:isOpen ? "var(--green)" : "rgba(180,40,40,0.9)", color:"#fff"
+    }}><span style={{width:5, height:5, borderRadius:99, background:"rgba(255,255,255,0.75)"}}/>{isOpen ? "營業中" : "休息中"}</span>
+  );
+}
+
+/** --- 通訊與時間邏輯 --- **/
+async function fetchWithRetry(url, options, retries = 5, backoff = 1000) {
+  try {
+    const response = await fetch(url, options);
+    if (options && options.mode === 'no-cors' && response.status === 0) return { status: "success" };
+    const text = await response.text();
+    if (text.trim().startsWith("<!DOCTYPE")) throw new Error("資料庫格式錯誤");
+    return JSON.parse(text);
+  } catch (error) {
+    if (retries > 0) {
+      await new Promise(resolve => setTimeout(resolve, backoff));
+      return fetchWithRetry(url, options, retries - 1, backoff * 2);
+    }
+    throw error;
+  }
+}
+
+function parseAndCheckRanges(text, currentMin) {
+  if (!text) return false;
+  if (text.includes("休息") || text.includes("歇業") || text.includes("公休")) return false;
+  const timeRanges = text.split(/[,，;\s/]/);
+  for (let range of timeRanges) {
+    const match = range.match(/(\d{1,2}):(\d{2})[-–—~](\d{1,2}):(\d{2})/);
+    if (!match) continue;
+    const startMin = parseInt(match[1]) * 60 + parseInt(match[2]);
+    const endMin = parseInt(match[3]) * 60 + parseInt(match[4]);
+    if (startMin <= endMin) {
+      if (currentMin >= startMin && currentMin <= endMin) return true;
+    } else {
+      if (currentMin >= startMin || currentMin <= endMin) return true;
+    }
+  }
+  return false;
+}
+
+function getTodayHoursText(openingHours) {
+  if (!openingHours || openingHours === "未填寫" || openingHours === "請見地圖") return "未提供時間";
+  try {
+    const now = new Date();
+    const currentDay = now.getDay();
+    const currentDayName = DAY_NAMES[currentDay];
+    if (openingHours.includes("週") || openingHours.includes("星期")) {
+      const segments = openingHours.split(/[\n,;]/);
+      for (let seg of segments) {
+        if (seg.includes(currentDayName) || seg.includes(currentDayName.replace("週", "星期"))) return seg.trim();
+        const rangeMatch = seg.match(/(週|星期)([一二三四五六日])至(週|星期)([一二三四五六日])/);
+        if (rangeMatch) {
+          const sIdx = DAY_NAMES.indexOf("週" + rangeMatch[2]);
+          const eIdx = DAY_NAMES.indexOf("週" + rangeMatch[4]);
+          if ((sIdx <= eIdx && currentDay >= sIdx && currentDay <= eIdx) || (sIdx > eIdx && (currentDay >= sIdx || currentDay <= eIdx))) return seg.trim();
+        }
+      }
+    }
+    return openingHours.split('\n')[0];
+  } catch (e) { return openingHours; }
+}
+
+function checkIsOpen(openingHours) {
+  if (!openingHours || openingHours === "未填寫" || openingHours === "請見地圖") return false;
+  try {
+    const now = new Date();
+    const currentMin = now.getHours() * 60 + now.getMinutes();
+    return parseAndCheckRanges(getTodayHoursText(openingHours), currentMin);
+  } catch (e) { return false; }
+}
+
+/** --- 營業時間收放組件 (依照圖片樣式齊平排版) --- **/
+function OpeningHoursDropdown({ hours }) {
+  const [expanded, setExpanded] = React.useState(false);
+  const todayFullLine = getTodayHoursText(hours);
+  const allLines = hours.split(/[\n;]/).filter(line => line.trim());
+
+  if (hours === "未填寫" || hours === "請見地圖") {
+    return <div style={{fontSize: 11, color: "#999", display:"flex", alignItems:"center", gap: 4}}>🕒 {hours}</div>;
+  }
+
+  // 取得當天的時間部分 (移除星期字眼)
+  const todayTimeValue = todayFullLine.split(/[:：]/).slice(1).join(':').trim() || todayFullLine;
+
+  return (
+    <div style={{width: "100%"}}>
+      <div 
+        onClick={(e) => { e.stopPropagation(); setExpanded(!expanded); }}
+        style={{fontSize: 12, color: "var(--t2)", display: "flex", alignItems: "center", gap: 5, cursor: "pointer", userSelect: "none"}}
+      >
+        <span style={{fontWeight: 600, color: "var(--t1)"}}>🕒 {todayTimeValue}</span>
+        <span style={{transform: expanded ? "rotate(180deg)" : "rotate(0)", transition: "transform 0.2s", display: "flex"}}>
+          <ChevronDown s={10}/>
+        </span>
+      </div>
+      {expanded && (
+        <div style={{
+          marginTop: 8, background: "rgba(0,0,0,0.03)", borderRadius: 10, padding: "12px", 
+          fontSize: 12, color: "#444", display: "flex", flexDirection: "column", gap: 10,
+          border: "1px solid rgba(0,0,0,0.05)", animation: "fadeIn 0.2s"
+        }}>
+          {allLines.map((line, idx) => {
+            const trimmedLine = line.trim();
+            const isToday = trimmedLine.includes(todayFullLine);
+            
+            // 拆分星期 (Label) 與 時間內容 (Content)
+            // 例如 "星期二: 11:00-14:30, 16:30-21:00"
+            const match = trimmedLine.match(/^([^:：]+)[:：]\s*(.*)$/);
+            const label = match ? match[1] : trimmedLine;
+            const content = match ? match[2] : "";
+
+            return (
+              <div key={idx} style={{
+                display: "grid", 
+                gridTemplateColumns: "65px 1fr", // 標籤固定寬度確保對齊
+                alignItems: "start",
+                fontWeight: isToday ? 800 : 400,
+                color: isToday ? "var(--red)" : "inherit"
+              }}>
+                <span style={{opacity: 0.75}}>{label}</span>
+                <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  {/* 將時間內容根據逗號拆分多行，達到圖片中的對齊效果 */}
+                  {content.split(/[,，]\s*/).map((timeSeg, tIdx) => (
+                    <span key={tIdx}>{timeSeg || "休息"}</span>
+                  ))}
+                  {!content && <span>休息</span>}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+const CATS=["台式料理","日式料理","中式料理","韓式料理","泰式料理","義式料理","美式餐廳","咖啡廳","手搖飲料","早餐/豆漿","火鍋","燒烤/串燒","海鮮","甜點/冰品","麵包烘焙","夜市小吃","台式小吃","牛肉麵","小籠包/點心","拉麵","鐵板燒","居酒屋","餐酒館","素食/蔬食","健康餐盒","速食","生鮮超市","便利商店","藥妝保健","生活雜貨","伴手禮","創意料理","西式/創意","藥膳/湯品","其他"];
+const DISTS=["中正區","萬華區","大同區","中山區","松山區","大安區","信義區","內湖區","南港區","士林區","北投區","文山區","板橋區","三重區","中和區","永和區","新莊區","新店區","土城區","蘆洲區","樹林區","汐止區","三峽區","淡水區","林口區","其他"];
+const EMOJIS={"台式料理":"🫕","日式料理":"🍱","中式料理":"🥢","韓式料理":"🥘","泰式料理":"🍲","義式料理":"🍝","美式餐廳":"🍔","咖啡廳":"☕","手搖飲料":"🧋","早餐/豆漿":"🥣","火鍋":"🍲","燒烤/串燒":"🔥","海鮮":"🦐","甜點/冰品":"🍰","麵包烘焙":"🥐","夜市小吃":"🧆","台式小吃":"🥟","牛肉麵":"🍜","小籠包/點心":"🥟","拉麵":"🍜","鐵板燒":"🍳","居酒屋":"🍶","餐酒館":"🍷","素食/蔬食":"🥗","健康餐盒":"🍱","速食":"🍟","生鮮超市":"🛒","便利商店":"🏪","藥妝保健":"💊","生活雜貨":"🛍️","伴手禮":"🎁","創意料理":"🍽️","西式/創意":"🍝","藥膳/湯品":"🍖","其他":"🍴"};
+
+/** --- 餐廳展示元件 --- **/
+function GridCard({r,onOpen}){
+  const isOpen = checkIsOpen(r.opening_hours);
+  return(
+    <div onClick={()=>onOpen(r)} style={{background:"var(--card)", borderRadius:20, overflow:"hidden", cursor:"pointer", boxShadow:"0 2px 8px rgba(0,0,0,0.06)", transition:"transform 0.2s"}}>
+      <div style={{height:140, background:"#f9f9f9", display:"flex", alignItems:"center", justifyContent:"center"}}><span style={{fontSize:48}}>{r.emoji||"🍴"}</span></div>
+      <div style={{
+        padding:"14px 16px",
+        background: "#fff",
+        color: "var(--t1)",
+        minHeight: 145,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between"
+      }}>
+        <div>
+          <div style={{fontSize:16, fontWeight:800, marginBottom:5, color:"var(--t1)", letterSpacing: "-0.01em"}}>{r.name}</div>
+          <div style={{fontSize:11, color:"var(--t2)", display:"flex", alignItems:"center", gap:4, marginBottom:10}}><PinIc s={11}/>{r.district} · {r.category}</div>
+          <div style={{marginBottom: 10}}><OpeningHoursDropdown hours={r.opening_hours} /></div>
+        </div>
+        <div style={{display:"flex", alignItems:"center", justifyContent: "space-between", paddingTop: 8, borderTop: "1px solid rgba(0,0,0,0.05)"}}>
+          <StatusPill isOpen={isOpen}/>
+          <div style={{display:"flex", alignItems:"center", gap:3}}>
+            <Stars rating={r.rating} s={10}/>
+            <span style={{fontSize:12, fontWeight:800, color:"var(--amber)"}}>{r.rating}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ListItem({r, onOpen}){
+  return(
+    <div onClick={()=>onOpen(r)} style={{background:"var(--card)", borderRadius:14, padding:"12px 16px", cursor:"pointer", boxShadow:"0 1px 4px rgba(0,0,0,0.05)", display:"flex", alignItems:"center", gap:14, transition:"background 0.15s"}}>
+      <div style={{width:50, height:50, background:"#f5f5f5", borderRadius:12, display:"flex", alignItems:"center", justifyContent:"center", fontSize:28, flexShrink:0}}>{r.emoji||"🍴"}</div>
+      <div style={{flex:1, minWidth:0}}>
+        <div style={{fontSize:15, fontWeight:800, color:"#111", marginBottom:2, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap"}}>{r.name}</div>
+        <div style={{fontSize:11, color:"#888", display:"flex", alignItems:"center", gap:4, marginBottom: 4}}>{r.district} · {r.category}</div>
+        <OpeningHoursDropdown hours={r.opening_hours} />
+      </div>
+      <div style={{display:"flex", flexDirection:"column", alignItems:"flex-end", gap:6, flexShrink:0}}>
+        <StatusPill isOpen={checkIsOpen(r.opening_hours)}/>
+        <div style={{display:"flex", alignItems:"center", gap:4}}><Stars rating={r.rating} s={10}/><span style={{fontSize:12, fontWeight:800, color:"var(--amber)"}}>{r.rating}</span></div>
+      </div>
+    </div>
+  );
+}
+
+/** --- 彈出視窗 --- **/
+function DetailModal({r, onClose, onDelete, onEdit}){
+  const isOpen = checkIsOpen(r.opening_hours);
+  const isCustom = r.source === "custom";
+  return(
+    <div onClick={onClose} style={{position:"fixed", inset:0, zIndex:600, background:"rgba(10,10,10,0.75)", backdropFilter:"blur(8px)", display:"flex", alignItems:"flex-end", justifyContent:"center", animation:"fadeIn 0.18s ease"}}>
+      <div onClick={e=>e.stopPropagation()} style={{background:isCustom ? "#FFF8F2" : "var(--card)", borderRadius:"24px 24px 0 0", width:"100%", maxWidth:500, maxHeight:"92vh", overflow:"auto", animation:"slideUp 0.26s cubic-bezier(0.22,1,0.36,1)", boxShadow:"0 -8px 40px rgba(0,0,0,0.22)", paddingBottom:40}}>
+        <div style={{display:"flex", justifyContent:"center", padding:"14px 0"}}><div style={{width:38, height:4, borderRadius:99, background:"rgba(0,0,0,0.1)"}}/></div>
+        <div style={{height:210, position:"relative", margin:"0 16px", borderRadius:18, overflow:"hidden", background:"#f5f5f5", display:"flex", alignItems:"center", justifyContent:"center"}}>
+          <span style={{fontSize:64}}>{r.emoji||"🍴"}</span>
+          <div style={{position:"absolute", inset:0, background:"linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 60%) Fitz"}}/>
+          <button onClick={onClose} style={{position:"absolute", top:12, right:12, width:32, height:32, borderRadius:99, border:"none", background:"rgba(0,0,0,0.35)", color:"#fff", cursor:"pointer"}}><XIc s={13}/></button>
+          <div style={{position:"absolute", bottom:14, left:16}}>
+            <div style={{fontSize:24, fontWeight:800, color:"#fff", marginBottom:6}}>{r.name}</div>
+            <div style={{display:"flex", gap:6, alignItems:"center"}}><Stars rating={r.rating} s={14}/><span style={{fontSize:14, color:"#fff", fontWeight:700}}>{r.rating}</span></div>
+          </div>
+        </div>
+        <div style={{padding:"20px 20px"}}>
+          <div style={{display:"flex", gap:8, alignItems:"center", marginBottom:16}}><StatusPill isOpen={isOpen}/><span style={{fontSize:12, color:"var(--t2)"}}><PinIc s={12}/>{r.district} · {r.category}</span></div>
+          <div style={{marginBottom: 20}}><OpeningHoursDropdown hours={r.opening_hours} /></div>
+          {r.note&&<div style={{background:"#FFF8F0", borderRadius:12, padding:"12px 15px", fontSize:13, lineHeight:1.75, marginBottom:18, borderLeft:"3px solid var(--red)", whiteSpace:"pre-wrap"}}>{r.note}</div>}
+          <div style={{display:"flex", gap:9}}>
+            <a href={r.map_link||"#"} target="_blank" rel="noreferrer" style={{flex:1, display:"flex", alignItems:"center", justifyContent:"center", padding:"13px 0", borderRadius:12, background:"var(--red)", color:"#fff", fontSize:14, fontWeight:700, textDecoration:"none"}}>Google Maps</a>
+            <button onClick={()=>{onEdit(r); onClose();}} style={{width:48, height:48, borderRadius:12, border:"1.5px solid #ddd", background:"#f9f9f9", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center"}}><EditIc/></button>
+            <button onClick={()=>{onDelete(r.id); onClose();}} style={{width:48, height:48, borderRadius:12, border:"1.5px solid #FECACA", background:"#FEF2F2", color:"var(--red)", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center"}}><TrashIc/></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function FormModal({onClose, onSave, existingNames, initialData}){
+  const isEdit = !!initialData;
+  const [name, setName] = React.useState(initialData?.name || "");
+  const [category, setCategory] = React.useState(initialData?.category || "");
+  const [district, setDistrict] = React.useState(initialData?.district || "");
+  const [rating, setRating] = React.useState(initialData?.rating || "4.0");
+  const [openHours, setOpenHours] = React.useState(initialData?.opening_hours || "");
+  const [mapLink, setMapLink] = React.useState(initialData?.map_link || "");
+  const [note, setNote] = React.useState(initialData?.note || "");
+  const [errors, setErrors] = React.useState({});
+  const [analyzing, setAnalyzing] = React.useState(false);
+
+  const handleAnalyze = async () => {
+    if(!mapLink.trim()) return;
+    setAnalyzing(true);
+    try {
+      const prompt = `任務：從指定的 Google Maps 網址提取店家資料。網址：${mapLink}。輸出必須回傳純 JSON，不含 Markdown。格式：{"name": "店名", "category": "類型", "district": "行政區", "rating": "評分", "openHours": "星期一: 11:00-14:30...格式的一週時間", "note": "簡介"}`;
+      const res = await fetchWithRetry(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], tools: [{ "google_search": {} }], generationConfig: { responseMimeType: "application/json" } })
+      });
+      const content = JSON.parse(res.candidates[0].content.parts[0].text);
+      if(content.name) setName(content.name);
+      if(content.category && CATS.includes(content.category)) setCategory(content.category);
+      if(content.district && DISTS.includes(content.district)) setDistrict(content.district);
+      if(content.rating) setRating(parseFloat(content.rating).toFixed(1));
+      if(content.openHours) setOpenHours(content.openHours);
+      if(content.note) setNote(content.note);
+    } catch (e) { console.error(e); } finally { setAnalyzing(false); }
+  };
+
+  function doConfirm(){
+    if(!name.trim()) return setErrors({name:"必填"});
+    if(existingNames.has(name) && (!isEdit || initialData.name !== name)) return setErrors({name:"已存在"});
+    const finalCat = category || "其他";
+    onSave({ id: initialData?.id || "u_"+Date.now(), name: name.trim(), district: district || "其他", category: finalCat, rating: parseFloat(rating).toFixed(1), opening_hours: openHours.trim()||"未填寫", is_open: "DYNAMIC", emoji: EMOJIS[finalCat] || "🍴", note: note.trim(), map_link: mapLink.trim()||"#", source: "custom" });
+    onClose();
+  }
+
+  const fieldS={width:"100%", padding:"10px 12px", borderRadius:9, border:"1.5px solid #eee", fontSize:13, background:"#f9f9f9", outline:"none", marginBottom:10};
+
+  return(
+    <div onClick={onClose} style={{position:"fixed", inset:0, zIndex:700, background:"rgba(10,10,10,0.78)", backdropFilter:"blur(8px)", display:"flex", alignItems:"flex-end", justifyContent:"center", animation:"fadeIn 0.15s ease"}}>
+      <div onClick={e=>e.stopPropagation()} style={{background:"var(--card)", borderRadius:"24px 24px 0 0", width:"100%", maxWidth:480, maxHeight:"92vh", display:"flex", flexDirection:"column", animation:"slideUp 0.24s cubic-bezier(0.22,1,0.36,1)", boxShadow:"0 -8px 40px rgba(0,0,0,0.22)", overflow:"hidden"}}>
+        <div style={{padding:"20px", overflowY:"auto"}}>
+          <div style={{fontSize:18, fontWeight:800, marginBottom:15}}>新增/編輯餐廳</div>
+          <label style={{fontSize:11, fontWeight:700, color:"var(--red)", display:"block", marginBottom:5}}>AI 解析網址</label>
+          <div style={{display: "flex", gap: 8, marginBottom: 15}}>
+            <input value={mapLink} onChange={e=>setMapLink(e.target.value)} placeholder="貼上網址..." style={{...fieldS, marginBottom: 0, flex: 1}}/>
+            <button onClick={handleAnalyze} disabled={analyzing} style={{padding: "0 15px", borderRadius: 9, background: "#333", color: "#fff", fontWeight: 700, border: "none", cursor: "pointer"}}>{analyzing ? <Loader2 s={14}/> : "解析"}</button>
+          </div>
+          <input value={name} onChange={e=>setName(e.target.value)} placeholder="店名 *" style={{...fieldS, borderColor:errors.name?"red":"#eee"}}/>
+          <div style={{display:"flex", gap:10}}>
+            <select value={category} onChange={e=>setCategory(e.target.value)} style={fieldS}><option value="" disabled>類型</option>{CATS.map(c=><option key={c} value={c}>{c}</option>)}</select>
+            <select value={district} onChange={e=>setDistrict(e.target.value)} style={fieldS}><option value="" disabled>區域</option>{DISTS.map(d=><option key={d} value={d}>{d}</option>)}</select>
+          </div>
+          <div style={{display:"flex", gap:10, alignItems:"center", marginBottom:10}}>
+            <div style={{flex:1}}><label style={{fontSize:10}}>評分</label><input type="number" step="0.1" value={rating} onChange={e=>setRating(e.target.value)} style={{...fieldS, marginBottom:0}}/></div>
+            <div style={{flex:2}}><label style={{fontSize:10}}>營業時間</label><input value={openHours} onChange={e=>setOpenHours(e.target.value)} placeholder="週一: 11:00-21:00" style={{...fieldS, marginBottom:0}}/></div>
+          </div>
+          <textarea value={note} onChange={e=>setNote(e.target.value)} placeholder="筆記..." style={{...fieldS, height:80}}/>
+          <button onClick={doConfirm} style={{width:"100%", padding:"14px", borderRadius:11, background:"var(--red)", color:"#fff", fontWeight: 800, border:"none"}}>儲存</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** --- 主程式 --- **/
+function App(){
+  const [data, setData] = React.useState([]);
+  const [deletedIds, setDeletedIds] = React.useState(()=>new Set(JSON.parse(localStorage.getItem(LS_KEY+"_del")||"[]")));
+  const [editedItems, setEditedItems] = React.useState(()=> {
+    const raw = localStorage.getItem(LS_KEY+"_edit");
+    try { return new Map(JSON.parse(raw || "[]")); } catch(e) { return new Map(); }
+  });
+  const [loading, setLoading] = React.useState(true);
+  const [search, setSearch] = React.useState("");
+  const [detailR, setDetailR] = React.useState(null);
+  const [showAdd, setShowAdd] = React.useState(false);
+  const [editingR, setEditingR] = React.useState(null);
+  const [categoryF, setCategoryF] = React.useState(new Set());
+  const [view, setView] = React.useState("grid");
+
+  const loadData = async (isInit = false) => {
+    try {
+      const json = await fetchWithRetry(`${GAS_URL}?t=${Date.now()}`);
+      if(json.status==="success") setData(json.data);
+    } catch(e) { console.error("載入失敗:", e); } finally { if(isInit) setLoading(false); }
+  };
+
+  React.useEffect(()=>{
+    loadData(true);
+    const timer = setInterval(()=>loadData(false), 30000);
+    return ()=>clearInterval(timer);
+  },[]);
+
+  React.useEffect(()=>{
+    localStorage.setItem(LS_KEY+"_del", JSON.stringify([...deletedIds]));
+    localStorage.setItem(LS_KEY+"_edit", JSON.stringify(Array.from(editedItems.entries())));
+  }, [deletedIds, editedItems]);
+
+  const handleAction = async (action, r) => {
+    const idStr = String(r.id || r);
+    if(action==="add") setData(prev=>[r, ...prev]);
+    if(action==="edit") setEditedItems(prev=>new Map(prev).set(idStr, r));
+    if(action==="delete") {
+      setDeletedIds(prev=>new Set(prev).add(idStr));
+      setData(prev=>prev.filter(x=>String(x.id)!==idStr));
+    }
+    try { await fetchWithRetry(GAS_URL, { method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'text/plain'}, body: JSON.stringify({action, id: idStr, ...r}) }); } catch(e) { console.error(e); }
+  };
+
+  const allData = React.useMemo(() => {
+    const map = new Map();
+    data.forEach(r => {
+      const idStr = String(r.id);
+      if(deletedIds.has(idStr)) return;
+      const final = editedItems.has(idStr) ? editedItems.get(idStr) : r;
+      if(final.name) map.set(final.name, final);
+    });
+    return Array.from(map.values());
+  }, [data, deletedIds, editedItems]);
+
+  const filtered = allData.filter(r => (r.name+(r.district||"")+(r.category||"")).toLowerCase().includes(search.toLowerCase()) && (categoryF.size === 0 || categoryF.has(r.category)));
+
+  return(
+    <div style={{minHeight:"100vh", background:"var(--bg)", display:"flex", flexDirection:"column"}}>
+      <nav style={{position:"sticky", top:0, zIndex:300, background:"rgba(24,24,24,0.92)", backdropFilter:"blur(20px)", height:60, display:"flex", alignItems:"center", justifyContent:"space-between", padding:"0 20px", borderBottom:"1px solid rgba(255,255,255,0.06)"}}>
+        <div style={{color:"#fff", fontSize:18, fontWeight:900}}>大台北 Food</div>
+        <button onClick={()=>setShowAdd(true)} style={{padding:"8px 15px", borderRadius:9, background:"var(--red)", color:"#fff", border:"none", fontWeight:700, cursor:"pointer"}}>新增</button>
+      </nav>
+      <div style={{maxWidth:1100, margin:"0 auto", padding:"10px 20px", display:"flex", gap:6, overflowX:"auto", scrollbarWidth:"none", width:"100%"}}>
+        <CatPill active={categoryF.size===0} onClick={()=>setCategoryF(new Set())}>全部</CatPill>
+        {[...new Set(allData.map(r=>r.category).filter(Boolean))].sort().map(c=>(<CatPill key={c} active={categoryF.has(c)} onClick={()=>{const n=new Set(categoryF); n.has(c)?n.delete(c):n.add(c); setCategoryF(n)}}>{c}</CatPill>))}
+      </div>
+      <div style={{padding:"15px 20px", background:"rgba(24,24,24,0.7)", position:"sticky", top:60, zIndex:200}}>
+        <div style={{maxWidth:1100, margin:"0 auto", display:"flex", gap:10, alignItems:"center"}}>
+          <div style={{flex:1, position:"relative"}}><span style={{position:"absolute", left:12, top:"50%", transform:"translateY(-50%)", color:"rgba(255,255,255,0.3)"}}><SearchIc s={15}/></span><input value={search} onChange={e=>setSearch(e.target.value)} placeholder="搜尋店名..." style={{width:"100%", padding:"10px 38px", borderRadius:10, background:"rgba(255,255,255,0.1)", color:"#fff", border:"none", outline:"none"}}/></div>
+          <div style={{display:"flex", background:"rgba(255,255,255,0.08)", borderRadius:10, padding:3}}><button onClick={()=>setView("grid")} style={{padding:8, borderRadius:8, border:"none", background: view==="grid"?"rgba(255,255,255,0.15)":"transparent", color: view==="grid"?"#fff":"rgba(255,255,255,0.4)", cursor:"pointer"}}><GridIc/></button><button onClick={()=>setView("list")} style={{padding:8, borderRadius:8, border:"none", background: view==="list"?"rgba(255,255,255,0.15)":"transparent", color: view==="list"?"#fff":"rgba(255,255,255,0.4)", cursor:"pointer"}}><ListIc/></button></div>
+        </div>
+      </div>
+      <main style={{flex:1, padding:"20px", maxWidth:1100, margin:"0 auto", width:"100%"}}>{loading ? <div style={{textAlign:"center", paddingTop:100}}><Loader2 s={32}/></div> : <div style={view === "grid" ? {display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(240px, 1fr))", gap:16} : {display:"flex", flexDirection:"column", gap:10}}>{filtered.map(r=>(view === "grid" ? <GridCard key={r.id} r={r} onOpen={setDetailR}/> : <ListItem key={r.id} r={r} onOpen={setDetailR}/>))}</div>}</main>
+      {detailR && <DetailModal r={detailR} onClose={()=>setDetailR(null)} onDelete={id=>handleAction("delete", id)} onEdit={setEditingR}/>}
+      {showAdd && <FormModal onClose={()=>setShowAdd(false)} onSave={r=>handleAction("add", r)} existingNames={new Set(allData.map(r=>r.name))} initialData={null}/>}
+      {editingR && <FormModal onClose={()=>setEditingR(null)} onSave={handleEdit} existingNames={new Set(allData.map(r=>r.name))} initialData={editingR}/>}
+    </div>
+  );
+}
+
+function CatPill({active, onClick, children}){
+  return(<button onClick={onClick} style={{padding:"7px 16px", borderRadius:99, border:"none", background:active?"#fff":"rgba(255,255,255,0.08)", color:active?"#000":"rgba(255,255,255,0.65)", fontSize:13, fontWeight:600, cursor:"pointer", transition:"all 0.15s", whiteSpace:"nowrap", flexShrink:0}}>{children}</button>);
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>
