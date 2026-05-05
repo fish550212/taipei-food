@@ -1053,6 +1053,7 @@
       const [errors, setErrors] = React.useState({});
       const [analyzing, setAnalyzing] = React.useState(false);
       const [analyzeError, setAnalyzeError] = React.useState("");
+      const [categoryUnmatched, setCategoryUnmatched] = React.useState(false);
 
       const handleAnalyze = async () => {
         if (!mapLink.trim()) return;
@@ -1067,7 +1068,8 @@
           if (res.error) throw new Error(res.error);
           if (res.name) setName(res.name);
           const aiCategory = normalizeCategory(res.category);
-          if (aiCategory) setCategory(aiCategory);
+          if (aiCategory) { setCategory(aiCategory); setCategoryUnmatched(false); }
+          else { setCategoryUnmatched(true); }
           if (res.district && DISTS.includes(res.district)) setDistrict(res.district);
           if (res.rating) setRating(parseFloat(res.rating).toFixed(1));
           if (res.openHours) setOpenHours(res.openHours);
@@ -1180,7 +1182,7 @@
                 style={{ ...fieldS, borderColor: errors.name ? "red" : "#eee" }}
               />
               <div style={{ display: "flex", gap: 10 }}>
-                <select value={category} onChange={(e) => setCategory(e.target.value)} style={fieldS}>
+                <select value={category} onChange={(e) => { setCategory(e.target.value); setCategoryUnmatched(false); }} style={{ ...fieldS, borderColor: categoryUnmatched ? "#f472b6" : "#eee", background: categoryUnmatched ? "#fff0f8" : "#f9f9f9" }}>
                   <option value="" disabled>
                     類型
                   </option>
