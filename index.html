@@ -610,9 +610,12 @@
       "泰式料理",
       "義式料理",
       "美式餐廳",
+      "牛排",
+      "咖哩",
       "咖啡廳",
       "手搖飲料",
       "早餐/豆漿",
+      "早午餐",
       "火鍋",
       "燒烤/串燒",
       "海鮮",
@@ -622,7 +625,7 @@
       "台式小吃",
       "牛肉麵",
       "小籠包/點心",
-      "拉麵",
+      "拉麵店",
       "鐵板燒",
       "居酒屋",
       "餐酒館",
@@ -687,7 +690,7 @@
       台式小吃: "🥟",
       牛肉麵: "🍜",
       "小籠包/點心": "🥟",
-      拉麵: "🍜",
+      拉麵店: "🍜",
       鐵板燒: "🍳",
       居酒屋: "🍶",
       餐酒館: "🍷",
@@ -707,13 +710,13 @@
 
     function normalizeCategory(value) {
       const raw = String(value || "").trim();
-      if (!raw) return "";
+      if (!raw) return "其他";
       if (CATS.includes(raw)) return raw;
 
       const normalized = raw.toLowerCase().replace(/[｜|／]/g, "/").replace(/\s+/g, "");
       const aliases = [
         ["咖啡廳", ["咖啡", "cafe", "coffee"]],
-        ["義式料理", ["義式", "義大利", "披薩", "pizza", "pasta"]],
+        ["義式料理", ["義式", "義大利", "披薩", "pizza", "pasta", "意大利餐廳"]],
         ["日式料理", ["日式", "日本", "壽司", "丼"]],
         ["韓式料理", ["韓式", "韓國"]],
         ["泰式料理", ["泰式", "泰國"]],
@@ -721,25 +724,106 @@
         ["台式料理", ["台式", "熱炒"]],
         ["台式小吃", ["小吃", "滷味", "鹽酥", "蚵仔", "肉圓", "臭豆腐"]],
         ["夜市小吃", ["夜市"]],
-        ["早餐/豆漿", ["早餐", "豆漿", "早午餐", "brunch"]],
+        ["拉麵店", ["拉麵"]],
+        ["早餐/豆漿", ["早餐", "豆漿"]],
+        ["早午餐", ["早午餐餐廳", "brunch", "早午餐"]],
         ["手搖飲料", ["手搖", "飲料", "珍奶", "奶茶"]],
         ["甜點/冰品", ["甜點", "冰品", "冰店", "蛋糕", "布丁"]],
         ["燒烤/串燒", ["燒烤", "串燒", "烤肉", "炭烤"]],
         ["美式餐廳", ["美式", "漢堡", "牛排", "steak", "burger"]],
-        ["創意料理", ["咖哩"]],
         ["西式/創意", ["西式", "創意", "異國"]],
         ["素食/蔬食", ["素食", "蔬食", "vegan", "vegetarian"]],
       ];
 
       const matched = aliases.find(([, words]) => words.some((word) => normalized.includes(word.toLowerCase())));
-      return matched ? matched[0] : "";
+      return matched ? matched[0] : "其他";
+    }
+
+    function normalizeDistrict(value) {
+      const raw = String(value || "").trim();
+      if (!raw) return "其他";
+      if (DISTS.includes(raw)) return raw;
+
+      const normalized = raw.replace(/\s+/g, "");
+      const matched = DISTS.find((dist) => dist !== "其他" && (normalized.includes(dist) || normalized.includes(dist.replace(/區$/, ""))));
+      return matched || "其他";
+    }
+
+    function normalizeWeekdayLine(line) {
+      const dayMap = {
+        Sunday: "週日",
+        Monday: "週一",
+        Tuesday: "週二",
+        Wednesday: "週三",
+        Thursday: "週四",
+        Friday: "週五",
+        Saturday: "週六",
+      };
+      return String(line || "").replace(/^(Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday)\s*:/i, (match, day) => {
+        const key = day.slice(0, 1).toUpperCase() + day.slice(1).toLowerCase();
+        return `${dayMap[key]}:`;
+      });
+    }
+
+    function normalizeOpeningHours(value) {
+      if (!value) return "未填寫";
+      if (Array.isArray(value)) return value.filter(Boolean).map(normalizeWeekdayLine).join("\n") || "未填寫";
+      if (typeof value === "object") {
+        if (Array.isArray(value.weekday_text)) return normalizeOpeningHours(value.weekday_text);
+        if (Array.isArray(value.weekdayText)) return normalizeOpeningHours(value.weekdayText);
+        if (Array.isArray(value.weekdayDescriptions)) return normalizeOpeningHours(value.weekdayDescriptions);
+        if (Array.isArray(value.weekday_descriptions)) return normalizeOpeningHours(value.weekday_descriptions);
+        return "未填寫";
+      }
+      return String(value).split("\n").map(normalizeWeekdayLine).join("\n").trim() || "未填寫";
+    }
+
+    function hasWeeklyOpeningHours(value) {
+      const normalized = normalizeOpeningHours(value);
+      const days = normalized.match(/(週|星期)[日一二三四五六]/g) || [];
+      return new Set(days).size >= 5 || normalized.split("\n").filter(Boolean).length >= 5;
+    }
+
+    function pickOpeningHours(source) {
+      if (!source) return "未填寫";
+      const candidates = [
+        source.weekday_text,
+        source.weekdayText,
+        source.weekdayDescriptions,
+        source.weekday_descriptions,
+        source.regularOpeningHours,
+        source.regular_opening_hours,
+        source.currentOpeningHours,
+        source.current_opening_hours,
+        source.opening_hours,
+        source.openingHours,
+        source.place?.regularOpeningHours,
+        source.place?.regular_opening_hours,
+        source.place?.currentOpeningHours,
+        source.place?.current_opening_hours,
+        source.place?.opening_hours,
+        source.result?.regularOpeningHours,
+        source.result?.regular_opening_hours,
+        source.result?.currentOpeningHours,
+        source.result?.current_opening_hours,
+        source.result?.opening_hours,
+        source.hours,
+        source["營業時間"],
+        source.openHours,
+      ];
+
+      for (const candidate of candidates) {
+        const normalized = normalizeOpeningHours(candidate);
+        if (normalized !== "未填寫") return normalized;
+      }
+      return "未填寫";
     }
 
     function normalizeRecord(r) {
       if (!r) return r;
       const category = normalizeCategory(r.category || r.type || r["類型"] || r["餐廳類型"]) || "其他";
-      const district = r.district || r["行政區"] || r["區域"] || "其他";
-      const openingHours = r.opening_hours || r.openHours || r["營業時間"] || "未填寫";
+      const district = normalizeDistrict(r.district || r["行政區"] || r["區域"]);
+      const openingHours = pickOpeningHours(r);
       const mapLink = r.map_link || r.mapLink || r["地圖連結"] || r["Google Maps"] || "#";
       return {
         ...r,
@@ -1063,16 +1147,23 @@
           const res = await fetchWithRetry("https://api-taipei-food.xmoneydoge.com/analyze", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ url: mapLink }),
+            body: JSON.stringify({ url: mapLink, fullWeek: true, includeWeeklyHours: true }),
           });
           if (res.error) throw new Error(res.error);
           if (res.name) setName(res.name);
           const aiCategory = normalizeCategory(res.category);
-          if (aiCategory) { setCategory(aiCategory); setCategoryUnmatched(false); }
-          else { setCategoryUnmatched(true); }
-          if (res.district && DISTS.includes(res.district)) setDistrict(res.district);
+          setCategory(aiCategory);
+          setCategoryUnmatched(false);
+          const aiDistrict = normalizeDistrict(res.district || res.area || res.address || res["行政區"] || res["區域"]);
+          setDistrict(aiDistrict);
           if (res.rating) setRating(parseFloat(res.rating).toFixed(1));
-          if (res.openHours) setOpenHours(res.openHours);
+          const aiOpenHours = pickOpeningHours(res);
+          if (aiOpenHours !== "未填寫") {
+            setOpenHours(aiOpenHours);
+            if (!hasWeeklyOpeningHours(aiOpenHours)) {
+              setAnalyzeError("目前 API 只回傳當天營業時間，尚未回傳一整週資料。");
+            }
+          }
           if (res.note) setNote(res.note);
         } catch (e) {
           console.error(e);
@@ -1089,13 +1180,13 @@
         onSave({
           id: initialData?.id || "u_" + Date.now(),
           name: name.trim(),
-          district: district || "其他",
+          district: normalizeDistrict(district),
           category: finalCat,
           type: finalCat,
           類型: finalCat,
           餐廳類型: finalCat,
           rating: parseFloat(rating).toFixed(1),
-          opening_hours: openHours.trim() || "未填寫",
+          opening_hours: normalizeOpeningHours(openHours),
           is_open: "DYNAMIC",
           emoji: EMOJIS[finalCat] || "🍴",
           note: note.trim(),
@@ -1147,33 +1238,37 @@
             }}
           >
             <div style={{ padding: "20px", overflowY: "auto" }}>
-              <div style={{ fontSize: 18, fontWeight: 800, marginBottom: 15 }}>新增/編輯餐廳</div>
-              <label style={{ fontSize: 11, fontWeight: 700, color: "var(--red)", display: "block", marginBottom: 5 }}>AI 解析網址</label>
-              <div style={{ display: "flex", gap: 8, marginBottom: 15 }}>
-                <input
-                  value={mapLink}
-                  onChange={(e) => setMapLink(e.target.value)}
-                  placeholder="貼上網址..."
-                  style={{ ...fieldS, marginBottom: 0, flex: 1 }}
-                />
-                <button
-                  onClick={handleAnalyze}
-                  disabled={analyzing}
-                  style={{
-                    padding: "0 15px",
-                    borderRadius: 9,
-                    background: "#333",
-                    color: "#fff",
-                    fontWeight: 700,
-                    border: "none",
-                    cursor: "pointer",
-                  }}
-                >
-                  {analyzing ? <Loader2 s={14} /> : "解析"}
-                </button>
-              </div>
-              {analyzeError && (
-                <div style={{ color: "var(--red)", fontSize: 12, marginTop: -10, marginBottom: 10 }}>{analyzeError}</div>
+              <div style={{ fontSize: 18, fontWeight: 800, marginBottom: 15 }}>{isEdit ? "編輯餐廳" : "新增餐廳"}</div>
+              {!isEdit && (
+                <>
+                  <label style={{ fontSize: 11, fontWeight: 700, color: "var(--red)", display: "block", marginBottom: 5 }}>查詢網址</label>
+                  <div style={{ display: "flex", gap: 8, marginBottom: 15 }}>
+                    <input
+                      value={mapLink}
+                      onChange={(e) => setMapLink(e.target.value)}
+                      placeholder="貼上網址..."
+                      style={{ ...fieldS, marginBottom: 0, flex: 1 }}
+                    />
+                    <button
+                      onClick={handleAnalyze}
+                      disabled={analyzing}
+                      style={{
+                        padding: "0 15px",
+                        borderRadius: 9,
+                        background: "#333",
+                        color: "#fff",
+                        fontWeight: 700,
+                        border: "none",
+                        cursor: "pointer",
+                      }}
+                    >
+                      {analyzing ? <Loader2 s={14} /> : "查詢"}
+                    </button>
+                  </div>
+                  {analyzeError && (
+                    <div style={{ color: "var(--red)", fontSize: 12, marginTop: -10, marginBottom: 10 }}>{analyzeError}</div>
+                  )}
+                </>
               )}
               <input
                 value={name}
@@ -1203,7 +1298,7 @@
                   ))}
                 </select>
               </div>
-              <div style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 10 }}>
+              <div style={{ display: "flex", gap: 10, marginBottom: 10 }}>
                 <div style={{ flex: 1 }}>
                   <label style={{ fontSize: 10 }}>評分</label>
                   <input
@@ -1216,11 +1311,11 @@
                 </div>
                 <div style={{ flex: 2 }}>
                   <label style={{ fontSize: 10 }}>營業時間</label>
-                  <input
+                  <textarea
                     value={openHours}
                     onChange={(e) => setOpenHours(e.target.value)}
-                    placeholder="週一: 11:00-21:00"
-                    style={{ ...fieldS, marginBottom: 0 }}
+                    placeholder={"週一: 11:00-21:00\n週二: 11:00-21:00"}
+                    style={{ ...fieldS, minHeight: 76, marginBottom: 0, resize: "vertical" }}
                   />
                 </div>
               </div>
