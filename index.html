@@ -1,1615 +1,1733 @@
 <!doctype html>
 <html lang="zh-TW">
-
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover" />
-  <title>美食口袋名單</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;900&family=DM+Sans:wght@400;500;600;700;800&display=swap"
-    rel="stylesheet" />
-  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
-  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
-  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
-  <style>
-    *,
-    *::before,
-    *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    :root {
-      --bg: #181818;
-      --bg2: #222222;
-      --card: #ffffff;
-      --card2: #f9f6f2;
-      --card-bg: #fff3e2;
-      --red: #e8272a;
-      --red-dk: #c41e21;
-      --red-lt: #fff0f0;
-      --black: #111111;
-      --t1: #111111;
-      --t2: #555555;
-      --t3: #999999;
-      --border: rgba(0, 0, 0, 0.08);
-      --green: #16a34a;
-      --green-lt: #f0fdf4;
-      --amber: #d97706;
-      --r-sm: 8px;
-      --r-md: 14px;
-      --r-lg: 20px;
-      --r-xl: 28px;
-      --sh: 0 2px 12px rgba(0, 0, 0, 0.08);
-      --sh-md: 0 6px 24px rgba(0, 0, 0, 0.12);
-      --sh-lg: 0 20px 60px rgba(0, 0, 0, 0.18);
-    }
-
-    html,
-    body {
-      height: 100%;
-      background: var(--bg);
-    }
-
-    body {
-      font-family:
-        "DM Sans",
-        "Noto Sans TC",
-        -apple-system,
-        sans-serif;
-      color: var(--t1);
-      -webkit-font-smoothing: antialiased;
-    }
-
-    #root {
-      min-height: 100vh;
-    }
-
-    input,
-    button,
-    textarea,
-    select {
-      font-family: inherit;
-    }
-
-    ::-webkit-scrollbar {
-      width: 4px;
-      height: 4px;
-    }
-
-    ::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.15);
-      border-radius: 99px;
-    }
-
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover" />
+    <title>美食口袋名單</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;900&family=DM+Sans:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
       }
 
-      to {
-        opacity: 1;
+      :root {
+        --bg: #181818;
+        --bg2: #222222;
+        --card: #ffffff;
+        --card2: #f9f6f2;
+        --card-bg: #fff3e2;
+        --red: #e8272a;
+        --red-dk: #c41e21;
+        --red-lt: #fff0f0;
+        --black: #111111;
+        --t1: #111111;
+        --t2: #555555;
+        --t3: #999999;
+        --border: rgba(0, 0, 0, 0.08);
+        --green: #16a34a;
+        --green-lt: #f0fdf4;
+        --amber: #d97706;
+        --r-sm: 8px;
+        --r-md: 14px;
+        --r-lg: 20px;
+        --r-xl: 28px;
+        --sh: 0 2px 12px rgba(0, 0, 0, 0.08);
+        --sh-md: 0 6px 24px rgba(0, 0, 0, 0.12);
+        --sh-lg: 0 20px 60px rgba(0, 0, 0, 0.18);
       }
-    }
 
-    @keyframes slideUp {
-      from {
-        opacity: 0;
-        transform: translateY(24px) scale(0.97);
+      html,
+      body {
+        height: 100%;
+        background: var(--bg);
       }
 
-      to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-      }
-    }
-
-    @keyframes gachaBounce {
-      0% {
-        opacity: 0;
-        transform: scale(0.75) translateY(32px);
+      body {
+        font-family:
+          "DM Sans",
+          "Noto Sans TC",
+          -apple-system,
+          sans-serif;
+        color: var(--t1);
+        -webkit-font-smoothing: antialiased;
       }
 
-      65% {
-        transform: scale(1.03) translateY(-4px);
+      #root {
+        min-height: 100vh;
       }
 
-      100% {
-        opacity: 1;
-        transform: scale(1) translateY(0);
+      input,
+      button,
+      textarea,
+      select {
+        font-family: inherit;
       }
-    }
-  </style>
-</head>
 
-<body>
-  <div id="root"></div>
+      ::-webkit-scrollbar {
+        width: 4px;
+        height: 4px;
+      }
 
-  <script type="text/babel">
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbzwgWiK7NPt9mykjmZMAg7C6SDxzPHh00oJVpCBQIX7UlOjuhMSCdhdgyF7jcZHlLu19w/exec";
-    const LS_KEY = "taipei_food_db_cache_v16_final";
-    const modelName = "gemini-2.5-flash-preview-09-2025";
-    const apiKey = "";
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
 
-    const DAY_NAMES = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+      ::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 99px;
+      }
 
-    /** --- 核心圖示組件 --- **/
-    const PinIc = ({ s = 13 }) => (
-      <svg
-        width={s}
-        height={s}
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={2}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        style={{ flexShrink: 0 }}
-      >
-        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-        <circle cx="12" cy="10" r="3" />
-      </svg>
-    );
-    const StarIc = ({ s = 12, f = false }) => (
-      <svg
-        width={s}
-        height={s}
-        viewBox="0 0 24 24"
-        fill={f ? "currentColor" : "none"}
-        stroke="currentColor"
-        strokeWidth={f ? 0 : 2}
-        style={{ flexShrink: 0 }}
-      >
-        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-      </svg>
-    );
-    const EditIc = ({ s = 14 }) => (
-      <svg
-        width={s}
-        height={s}
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={2}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        style={{ flexShrink: 0 }}
-      >
-        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-      </svg>
-    );
-    const TrashIc = ({ s = 14 }) => (
-      <svg
-        width={s}
-        height={s}
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={2}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        style={{ flexShrink: 0 }}
-      >
-        <polyline points="3 6 5 6 21 6" />
-        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
-        <path d="M10 11v6" />
-        <path d="M14 11v6" />
-      </svg>
-    );
-    const XIc = ({ s = 15 }) => (
-      <svg
-        width={s}
-        height={s}
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={2.5}
-        strokeLinecap="round"
-        style={{ flexShrink: 0 }}
-      >
-        <line x1="18" y1="6" x2="6" y2="18" />
-        <line x1="6" y1="6" x2="18" y2="18" />
-      </svg>
-    );
-    const Loader2 = ({ s = 16 }) => (
-      <svg
-        width={s}
-        height={s}
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2.5"
-        style={{ animation: "spin 1s linear infinite", flexShrink: 0 }}
-      >
-        <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-      </svg>
-    );
-    const SearchIc = ({ s = 16 }) => (
-      <svg
-        width={s}
-        height={s}
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={2}
-        strokeLinecap="round"
-        style={{ flexShrink: 0 }}
-      >
-        <circle cx="11" cy="11" r="8" />
-        <line x1="21" y1="21" x2="16.65" y2="16.65" />
-      </svg>
-    );
-    const SparkIc = ({ s = 16 }) => (
-      <svg
-        width={s}
-        height={s}
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={2}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        style={{ flexShrink: 0 }}
-      >
-        <path d="M12 3l1.91 5.89L20 10.8l-4.59 4.11L16.32 21 12 18.11 7.68 21l.91-6.09L4 10.8l6.09-1.91L12 3z" />
-      </svg>
-    );
-    const GridIc = ({ s = 16 }) => (
-      <svg
-        width={s}
-        height={s}
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={2}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        style={{ flexShrink: 0 }}
-      >
-        <rect x="3" y="3" width="7" height="7" rx="1" />
-        <rect x="14" y="3" width="7" height="7" rx="1" />
-        <rect x="14" y="14" width="7" height="7" rx="1" />
-        <rect x="3" y="14" width="7" height="7" rx="1" />
-      </svg>
-    );
-    const ListIc = ({ s = 16 }) => (
-      <svg
-        width={s}
-        height={s}
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={2}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        style={{ flexShrink: 0 }}
-      >
-        <line x1="8" y1="6" x2="21" y2="6" />
-        <line x1="8" y1="12" x2="21" y2="12" />
-        <line x1="8" y1="18" x2="21" y2="18" />
-        <line x1="3" y1="6" x2="3.01" y2="6" />
-        <line x1="3" y1="12" x2="3.01" y2="12" />
-        <line x1="3" y1="18" x2="3.01" y2="18" />
-      </svg>
-    );
-    const ChevronDown = ({ s = 12 }) => (
-      <svg
-        width={s}
-        height={s}
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={3}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        style={{ flexShrink: 0 }}
-      >
-        <path d="M6 9l6 6 6-6" />
-      </svg>
-    );
-    const ClockIc = ({ s = 12 }) => (
-      <svg
-        width={s}
-        height={s}
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={2}
-        strokeLinecap="round"
-        style={{ flexShrink: 0 }}
-      >
-        <circle cx="12" cy="12" r="10" />
-        <polyline points="12 6 12 12 16 14" />
-      </svg>
-    );
-    const DiceIc = ({ s = 16 }) => (
-      <svg
-        width={s}
-        height={s}
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={2}
-        strokeLinecap="round"
-        style={{ flexShrink: 0 }}
-      >
-        <rect x="2" y="2" width="20" height="20" rx="5" />
-        <circle cx="8" cy="8" r="1.5" fill="currentColor" stroke="none" />
-        <circle cx="16" cy="8" r="1.5" fill="currentColor" stroke="none" />
-        <circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none" />
-        <circle cx="8" cy="16" r="1.5" fill="currentColor" stroke="none" />
-        <circle cx="16" cy="16" r="1.5" fill="currentColor" stroke="none" />
-      </svg>
-    );
-    const PlusIc = ({ s = 16 }) => (
-      <svg
-        width={s}
-        height={s}
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={2.5}
-        strokeLinecap="round"
-        style={{ flexShrink: 0 }}
-      >
-        <line x1="12" y1="5" x2="12" y2="19" />
-        <line x1="5" y1="12" x2="19" y2="12" />
-      </svg>
-    );
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
 
-    /** --- 基礎 UI 元件 (Hoisted) --- **/
-    function Stars({ rating, s = 12 }) {
-      const r = Math.round(parseFloat(rating) || 0);
-      return (
-        <span style={{ display: "flex", gap: 1, color: "var(--amber)" }}>
-          {[1, 2, 3, 4, 5].map((i) => (
-            <StarIc key={i} s={s} f={i <= r} />
-          ))}
-        </span>
-      );
-    }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
 
-    function StatusPill({ isOpen }) {
-      return (
-        <span
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 4,
-            padding: "3px 10px",
-            borderRadius: 99,
-            fontSize: 11,
-            fontWeight: 600,
-            background: isOpen ? "var(--green)" : "rgba(180,40,40,0.9)",
-            color: "#fff",
-          }}
+        to {
+          opacity: 1;
+        }
+      }
+
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(24px) scale(0.97);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      @keyframes gachaBounce {
+        0% {
+          opacity: 0;
+          transform: scale(0.75) translateY(32px);
+        }
+
+        65% {
+          transform: scale(1.03) translateY(-4px);
+        }
+
+        100% {
+          opacity: 1;
+          transform: scale(1) translateY(0);
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+      const GAS_URL = "https://script.google.com/macros/s/AKfycbzwgWiK7NPt9mykjmZMAg7C6SDxzPHh00oJVpCBQIX7UlOjuhMSCdhdgyF7jcZHlLu19w/exec";
+      const LS_KEY = "taipei_food_db_cache_v16_final";
+      const modelName = "gemini-2.5-flash-preview-09-2025";
+      const apiKey = "";
+
+      const DAY_NAMES = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+
+      /** --- 核心圖示組件 --- **/
+      const PinIc = ({ s = 13 }) => (
+        <svg
+          width={s}
+          height={s}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={2}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          style={{ flexShrink: 0 }}
         >
-          <span style={{ width: 5, height: 5, borderRadius: 99, background: "rgba(255,255,255,0.75)", display: "inline-block" }} />
-          {isOpen ? "營業中" : "休息中"}
-        </span>
+          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+          <circle cx="12" cy="10" r="3" />
+        </svg>
       );
-    }
+      const StarIc = ({ s = 12, f = false }) => (
+        <svg
+          width={s}
+          height={s}
+          viewBox="0 0 24 24"
+          fill={f ? "currentColor" : "none"}
+          stroke="currentColor"
+          strokeWidth={f ? 0 : 2}
+          style={{ flexShrink: 0 }}
+        >
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+        </svg>
+      );
+      const EditIc = ({ s = 14 }) => (
+        <svg
+          width={s}
+          height={s}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={2}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          style={{ flexShrink: 0 }}
+        >
+          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+        </svg>
+      );
+      const TrashIc = ({ s = 14 }) => (
+        <svg
+          width={s}
+          height={s}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={2}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          style={{ flexShrink: 0 }}
+        >
+          <polyline points="3 6 5 6 21 6" />
+          <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+          <path d="M10 11v6" />
+          <path d="M14 11v6" />
+        </svg>
+      );
+      const XIc = ({ s = 15 }) => (
+        <svg
+          width={s}
+          height={s}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={2.5}
+          strokeLinecap="round"
+          style={{ flexShrink: 0 }}
+        >
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      );
+      const Loader2 = ({ s = 16 }) => (
+        <svg
+          width={s}
+          height={s}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          style={{ animation: "spin 1s linear infinite", flexShrink: 0 }}
+        >
+          <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+        </svg>
+      );
+      const SearchIc = ({ s = 16 }) => (
+        <svg
+          width={s}
+          height={s}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={2}
+          strokeLinecap="round"
+          style={{ flexShrink: 0 }}
+        >
+          <circle cx="11" cy="11" r="8" />
+          <line x1="21" y1="21" x2="16.65" y2="16.65" />
+        </svg>
+      );
+      const SparkIc = ({ s = 16 }) => (
+        <svg
+          width={s}
+          height={s}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={2}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          style={{ flexShrink: 0 }}
+        >
+          <path d="M12 3l1.91 5.89L20 10.8l-4.59 4.11L16.32 21 12 18.11 7.68 21l.91-6.09L4 10.8l6.09-1.91L12 3z" />
+        </svg>
+      );
+      const GridIc = ({ s = 16 }) => (
+        <svg
+          width={s}
+          height={s}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={2}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          style={{ flexShrink: 0 }}
+        >
+          <rect x="3" y="3" width="7" height="7" rx="1" />
+          <rect x="14" y="3" width="7" height="7" rx="1" />
+          <rect x="14" y="14" width="7" height="7" rx="1" />
+          <rect x="3" y="14" width="7" height="7" rx="1" />
+        </svg>
+      );
+      const ListIc = ({ s = 16 }) => (
+        <svg
+          width={s}
+          height={s}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={2}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          style={{ flexShrink: 0 }}
+        >
+          <line x1="8" y1="6" x2="21" y2="6" />
+          <line x1="8" y1="12" x2="21" y2="12" />
+          <line x1="8" y1="18" x2="21" y2="18" />
+          <line x1="3" y1="6" x2="3.01" y2="6" />
+          <line x1="3" y1="12" x2="3.01" y2="12" />
+          <line x1="3" y1="18" x2="3.01" y2="18" />
+        </svg>
+      );
+      const ChevronDown = ({ s = 12 }) => (
+        <svg
+          width={s}
+          height={s}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={3}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          style={{ flexShrink: 0 }}
+        >
+          <path d="M6 9l6 6 6-6" />
+        </svg>
+      );
+      const ClockIc = ({ s = 12 }) => (
+        <svg
+          width={s}
+          height={s}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={2}
+          strokeLinecap="round"
+          style={{ flexShrink: 0 }}
+        >
+          <circle cx="12" cy="12" r="10" />
+          <polyline points="12 6 12 12 16 14" />
+        </svg>
+      );
+      const DiceIc = ({ s = 16 }) => (
+        <svg
+          width={s}
+          height={s}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={2}
+          strokeLinecap="round"
+          style={{ flexShrink: 0 }}
+        >
+          <rect x="2" y="2" width="20" height="20" rx="5" />
+          <circle cx="8" cy="8" r="1.5" fill="currentColor" stroke="none" />
+          <circle cx="16" cy="8" r="1.5" fill="currentColor" stroke="none" />
+          <circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none" />
+          <circle cx="8" cy="16" r="1.5" fill="currentColor" stroke="none" />
+          <circle cx="16" cy="16" r="1.5" fill="currentColor" stroke="none" />
+        </svg>
+      );
+      const PlusIc = ({ s = 16 }) => (
+        <svg
+          width={s}
+          height={s}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={2.5}
+          strokeLinecap="round"
+          style={{ flexShrink: 0 }}
+        >
+          <line x1="12" y1="5" x2="12" y2="19" />
+          <line x1="5" y1="12" x2="19" y2="12" />
+        </svg>
+      );
 
-    /** --- 通訊與時間邏輯 --- **/
-    async function fetchWithRetry(url, options, retries = 5, backoff = 1000) {
-      try {
-        const response = await fetch(url, options);
-        if (options && options.mode === "no-cors" && response.status === 0) return { status: "success" };
-        const text = await response.text();
-        if (text.trim().startsWith("<!DOCTYPE")) throw new Error("資料庫格式錯誤");
-        return JSON.parse(text);
-      } catch (error) {
-        if (retries > 0) {
-          await new Promise((resolve) => setTimeout(resolve, backoff));
-          return fetchWithRetry(url, options, retries - 1, backoff * 2);
+      /** --- 基礎 UI 元件 (Hoisted) --- **/
+      function Stars({ rating, s = 12 }) {
+        const r = Math.round(parseFloat(rating) || 0);
+        return (
+          <span style={{ display: "flex", gap: 1, color: "var(--amber)" }}>
+            {[1, 2, 3, 4, 5].map((i) => (
+              <StarIc key={i} s={s} f={i <= r} />
+            ))}
+          </span>
+        );
+      }
+
+      function StatusPill({ isOpen }) {
+        return (
+          <span
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 4,
+              padding: "3px 10px",
+              borderRadius: 99,
+              fontSize: 11,
+              fontWeight: 600,
+              background: isOpen ? "var(--green)" : "rgba(180,40,40,0.9)",
+              color: "#fff",
+            }}
+          >
+            <span style={{ width: 5, height: 5, borderRadius: 99, background: "rgba(255,255,255,0.75)", display: "inline-block" }} />
+            {isOpen ? "營業中" : "休息中"}
+          </span>
+        );
+      }
+
+      /** --- 通訊與時間邏輯 --- **/
+      async function fetchWithRetry(url, options, retries = 5, backoff = 1000) {
+        try {
+          const response = await fetch(url, options);
+          if (options && options.mode === "no-cors" && response.status === 0) return { status: "success" };
+          const text = await response.text();
+          if (text.trim().startsWith("<!DOCTYPE")) throw new Error("資料庫格式錯誤");
+          return JSON.parse(text);
+        } catch (error) {
+          if (retries > 0) {
+            await new Promise((resolve) => setTimeout(resolve, backoff));
+            return fetchWithRetry(url, options, retries - 1, backoff * 2);
+          }
+          throw error;
         }
-        throw error;
       }
-    }
 
-    function getDayIndex(dayChar) {
-      return ["日", "一", "二", "三", "四", "五", "六"].indexOf(dayChar);
-    }
-
-    function expandDayRange(startIdx, endIdx) {
-      const days = [];
-      if (startIdx < 0 || endIdx < 0) return days;
-      let current = startIdx;
-      while (true) {
-        days.push(current);
-        if (current === endIdx) break;
-        current = (current + 1) % 7;
+      function getDayIndex(dayChar) {
+        return ["日", "一", "二", "三", "四", "五", "六"].indexOf(dayChar);
       }
-      return days;
-    }
 
-    function parseWeeklyHours(openingHours) {
-      if (!openingHours || !/(週|星期)[日一二三四五六]/.test(openingHours)) return [];
-      const labelRegex = /(週|星期)([日一二三四五六])(?:\s*(?:至|到|-|–|~)\s*(?:週|星期)?([日一二三四五六]))?/g;
-      const matches = [...openingHours.matchAll(labelRegex)];
-      return matches
-        .map((match, idx) => {
-          const next = matches[idx + 1];
-          const raw = openingHours.slice(match.index, next ? next.index : openingHours.length).trim().replace(/^[,，;；\s]+|[,，;；\s]+$/g, "");
-          const startIdx = getDayIndex(match[2]);
-          const endIdx = getDayIndex(match[3] || match[2]);
-          const content = raw.slice(match[0].length).replace(/^[\s:：,，;；-]+/, "").trim() || "休息";
-          return {
-            label: match[0],
-            content,
-            days: expandDayRange(startIdx, endIdx),
-          };
-        })
-        .filter((item) => item.days.length);
-    }
-
-    function formatHoursContent(content) {
-      return String(content || "休息")
-        .split(/[,，]\s*/)
-        .filter(Boolean)
-        .join(" / ");
-    }
-
-    function formatDayLabel(label) {
-      const shortLabel = String(label || "").replace(/星期/g, "週");
-      const rangeMatch = shortLabel.match(/週([日一二三四五六])(?:至|到|-|–|~)週?([日一二三四五六])/);
-      if (rangeMatch) return `${rangeMatch[1]}-${rangeMatch[2]}`;
-      return shortLabel.length > 1 ? shortLabel.slice(-2) : shortLabel;
-    }
-
-    function getTodayHoursText(openingHours) {
-      if (!openingHours || openingHours === "未填寫" || openingHours === "請見地圖") return "未提供時間";
-      try {
-        const now = new Date();
-        const currentDay = now.getDay();
-        const parsed = parseWeeklyHours(openingHours);
-        const today = parsed.find((item) => item.days.includes(currentDay));
-        if (today) return `${DAY_NAMES[currentDay]}: ${today.content}`;
-        return openingHours.split("\n")[0];
-      } catch (e) {
-        return openingHours;
+      function expandDayRange(startIdx, endIdx) {
+        const days = [];
+        if (startIdx < 0 || endIdx < 0) return days;
+        let current = startIdx;
+        while (true) {
+          days.push(current);
+          if (current === endIdx) break;
+          current = (current + 1) % 7;
+        }
+        return days;
       }
-    }
 
-    function parseAndCheckRanges(text, currentMin) {
-      if (!text) return false;
-      if (text.includes("休息") || text.includes("歇業") || text.includes("公休")) return false;
-      const timeRanges = text.split(/[,，;\s/]/);
-      for (let range of timeRanges) {
-        const match = range.match(/(\d{1,2}):(\d{2})[-–—~](\d{1,2}):(\d{2})/);
-        if (!match) continue;
-        const startMin = parseInt(match[1]) * 60 + parseInt(match[2]);
-        const endMin = parseInt(match[3]) * 60 + parseInt(match[4]);
-        if (startMin <= endMin) {
-          if (currentMin >= startMin && currentMin <= endMin) return true;
-        } else {
-          if (currentMin >= startMin || currentMin <= endMin) return true;
+      function parseWeeklyHours(openingHours) {
+        if (!openingHours || !/(週|星期)[日一二三四五六]/.test(openingHours)) return [];
+        const labelRegex = /(週|星期)([日一二三四五六])(?:\s*(?:至|到|-|–|~)\s*(?:週|星期)?([日一二三四五六]))?/g;
+        const matches = [...openingHours.matchAll(labelRegex)];
+        return matches
+          .map((match, idx) => {
+            const next = matches[idx + 1];
+            const raw = openingHours
+              .slice(match.index, next ? next.index : openingHours.length)
+              .trim()
+              .replace(/^[,，;；\s]+|[,，;；\s]+$/g, "");
+            const startIdx = getDayIndex(match[2]);
+            const endIdx = getDayIndex(match[3] || match[2]);
+            const content =
+              raw
+                .slice(match[0].length)
+                .replace(/^[\s:：,，;；-]+/, "")
+                .trim() || "休息";
+            return {
+              label: match[0],
+              content,
+              days: expandDayRange(startIdx, endIdx),
+            };
+          })
+          .filter((item) => item.days.length);
+      }
+
+      function formatHoursContent(content) {
+        return String(content || "休息")
+          .split(/[,，]\s*/)
+          .filter(Boolean)
+          .join(" / ");
+      }
+
+      function formatDayLabel(label) {
+        const shortLabel = String(label || "").replace(/星期/g, "週");
+        const rangeMatch = shortLabel.match(/週([日一二三四五六])(?:至|到|-|–|~)週?([日一二三四五六])/);
+        if (rangeMatch) return `${rangeMatch[1]}-${rangeMatch[2]}`;
+        return shortLabel.length > 1 ? shortLabel.slice(-2) : shortLabel;
+      }
+
+      function getTodayHoursText(openingHours) {
+        if (!openingHours || openingHours === "未填寫" || openingHours === "請見地圖") return "未提供時間";
+        try {
+          const now = new Date();
+          const currentDay = now.getDay();
+          const parsed = parseWeeklyHours(openingHours);
+          const today = parsed.find((item) => item.days.includes(currentDay));
+          if (today) return `${DAY_NAMES[currentDay]}: ${today.content}`;
+          return openingHours.split("\n")[0];
+        } catch (e) {
+          return openingHours;
         }
       }
-      return false;
-    }
 
-    function checkIsOpen(openingHours) {
-      if (!openingHours || openingHours === "未填寫" || openingHours === "請見地圖") return false;
-      try {
-        const now = new Date();
-        const currentMin = now.getHours() * 60 + now.getMinutes();
-        return parseAndCheckRanges(getTodayHoursText(openingHours), currentMin);
-      } catch (e) {
+      function parseAndCheckRanges(text, currentMin) {
+        if (!text) return false;
+        if (text.includes("休息") || text.includes("歇業") || text.includes("公休")) return false;
+        const timeRanges = text.split(/[,，;\s/]/);
+        for (let range of timeRanges) {
+          const match = range.match(/(\d{1,2}):(\d{2})[-–—~](\d{1,2}):(\d{2})/);
+          if (!match) continue;
+          const startMin = parseInt(match[1]) * 60 + parseInt(match[2]);
+          const endMin = parseInt(match[3]) * 60 + parseInt(match[4]);
+          if (startMin <= endMin) {
+            if (currentMin >= startMin && currentMin <= endMin) return true;
+          } else {
+            if (currentMin >= startMin || currentMin <= endMin) return true;
+          }
+        }
         return false;
       }
-    }
 
-    /** --- 營業時間收放組件 (依照主人要求的 35px 寬度排版) --- **/
-    function OpeningHoursDropdown({ hours }) {
-      const [expanded, setExpanded] = React.useState(false);
-      const safeHours = hours || "未填寫";
-      const todayFullLine = getTodayHoursText(safeHours);
-      const parsedLines = parseWeeklyHours(safeHours);
-      const allLines =
-        parsedLines.length > 0
-          ? parsedLines
-          : safeHours
-            .split(/[\n;]/)
-            .filter((line) => line.trim())
-            .map((line) => {
-              const match = line.trim().match(/^([^:：]+)[:：]\s*(.*)$/);
-              return {
-                label: match ? match[1] : "",
-                content: match ? match[2] : line.trim(),
-                days: [],
-              };
-            });
-
-      if (safeHours === "未填寫" || safeHours === "請見地圖") {
-        return <div style={{ fontSize: 11, color: "#999", display: "flex", alignItems: "center", gap: 4 }}>🕒 {safeHours}</div>;
+      function checkIsOpen(openingHours) {
+        if (!openingHours || openingHours === "未填寫" || openingHours === "請見地圖") return false;
+        try {
+          const now = new Date();
+          const currentMin = now.getHours() * 60 + now.getMinutes();
+          return parseAndCheckRanges(getTodayHoursText(openingHours), currentMin);
+        } catch (e) {
+          return false;
+        }
       }
 
-      // 取得當天的時間部分 (移除星期字眼)
-      const todayTimeValue = formatHoursContent(todayFullLine.split(/[:：]/).slice(1).join(":").trim() || todayFullLine);
-      const currentDay = new Date().getDay();
+      /** --- 營業時間收放組件 (依照主人要求的 35px 寬度排版) --- **/
+      function OpeningHoursDropdown({ hours }) {
+        const [expanded, setExpanded] = React.useState(false);
+        const safeHours = hours || "未填寫";
+        const todayFullLine = getTodayHoursText(safeHours);
+        const parsedLines = parseWeeklyHours(safeHours);
+        const allLines =
+          parsedLines.length > 0
+            ? parsedLines
+            : safeHours
+                .split(/[\n;]/)
+                .filter((line) => line.trim())
+                .map((line) => {
+                  const match = line.trim().match(/^([^:：]+)[:：]\s*(.*)$/);
+                  return {
+                    label: match ? match[1] : "",
+                    content: match ? match[2] : line.trim(),
+                    days: [],
+                  };
+                });
 
-      return (
-        <div style={{ width: "100%" }}>
-          <div
-            onClick={(e) => {
-              e.stopPropagation();
-              setExpanded(!expanded);
-            }}
-            style={{ fontSize: 12, color: "var(--t2)", display: "flex", alignItems: "center", gap: 5, cursor: "pointer", userSelect: "none" }}
-          >
-            <span style={{ fontWeight: 600, color: "var(--t1)" }}>🕒 {todayTimeValue}</span>
-            <span style={{ transform: expanded ? "rotate(180deg)" : "rotate(0)", transition: "transform 0.2s", display: "flex" }}>
-              <ChevronDown s={10} />
-            </span>
-          </div>
-          {expanded && (
+        if (safeHours === "未填寫" || safeHours === "請見地圖") {
+          return <div style={{ fontSize: 11, color: "#999", display: "flex", alignItems: "center", gap: 4 }}>🕒 {safeHours}</div>;
+        }
+
+        // 取得當天的時間部分 (移除星期字眼)
+        const todayTimeValue = formatHoursContent(todayFullLine.split(/[:：]/).slice(1).join(":").trim() || todayFullLine);
+        const currentDay = new Date().getDay();
+
+        return (
+          <div style={{ width: "100%" }}>
             <div
-              style={{
-                marginTop: 8,
-                background: "rgba(0, 0, 0, 0.03)",
-                borderRadius: "10px",
-                padding: "12px",
-                fontSize: "12px",
-                color: "rgb(68, 68, 68)",
-                display: "flex",
-                flexDirection: "column",
-                gap: "10px",
-                border: "1px solid rgba(0, 0, 0, 0.05)",
-                animation: "0.2s ease 0s 1 normal none running fadeIn",
+              onClick={(e) => {
+                e.stopPropagation();
+                setExpanded(!expanded);
               }}
+              style={{ fontSize: 12, color: "var(--t2)", display: "flex", alignItems: "center", gap: 5, cursor: "pointer", userSelect: "none" }}
             >
-              {allLines.map((line, idx) => {
-                const isToday = line.days.includes(currentDay);
-                const label = formatDayLabel(line.label);
-
-                return (
-                  <div
-                    key={idx}
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "35px 1fr", // 您要求的 35px
-                      alignItems: "start",
-                      fontWeight: isToday ? 800 : 400,
-                      color: isToday ? "var(--red)" : "inherit",
-                    }}
-                  >
-                    <span style={{ opacity: 0.75, textAlign: "left" }}>{label}</span>
-                    <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-                      {/* 將內容根據逗號拆分為多行 */}
-                      <span>{formatHoursContent(line.content)}</span>
-                    </div>
-                  </div>
-                );
-              })}
+              <span style={{ fontWeight: 600, color: "var(--t1)" }}>🕒 {todayTimeValue}</span>
+              <span style={{ transform: expanded ? "rotate(180deg)" : "rotate(0)", transition: "transform 0.2s", display: "flex" }}>
+                <ChevronDown s={10} />
+              </span>
             </div>
-          )}
-        </div>
-      );
-    }
+            {expanded && (
+              <div
+                style={{
+                  marginTop: 8,
+                  background: "rgba(0, 0, 0, 0.03)",
+                  borderRadius: "10px",
+                  padding: "12px",
+                  fontSize: "12px",
+                  color: "rgb(68, 68, 68)",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "10px",
+                  border: "1px solid rgba(0, 0, 0, 0.05)",
+                  animation: "0.2s ease 0s 1 normal none running fadeIn",
+                }}
+              >
+                {allLines.map((line, idx) => {
+                  const isToday = line.days.includes(currentDay);
+                  const label = formatDayLabel(line.label);
 
-    const CATS = [
-      "台式料理",
-      "日式料理",
-      "中式料理",
-      "韓式料理",
-      "泰式料理",
-      "義式料理",
-      "美式餐廳",
-      "牛排",
-      "咖哩",
-      "咖啡廳",
-      "手搖飲料",
-      "早餐/豆漿",
-      "早午餐",
-      "火鍋",
-      "燒烤/串燒",
-      "海鮮",
-      "甜點/冰品",
-      "麵包烘焙",
-      "夜市小吃",
-      "台式小吃",
-      "牛肉麵",
-      "小籠包/點心",
-      "拉麵店",
-      "鐵板燒",
-      "居酒屋",
-      "餐酒館",
-      "素食/蔬食",
-      "健康餐盒",
-      "速食",
-      "生鮮超市",
-      "便利商店",
-      "藥妝保健",
-      "生活雜貨",
-      "伴手禮",
-      "創意料理",
-      "西式/創意",
-      "藥膳/湯品",
-      "其他",
-    ];
-    const DISTS = [
-      "中正區",
-      "萬華區",
-      "大同區",
-      "中山區",
-      "松山區",
-      "大安區",
-      "信義區",
-      "內湖區",
-      "南港區",
-      "士林區",
-      "北投區",
-      "文山區",
-      "板橋區",
-      "三重區",
-      "中和區",
-      "永和區",
-      "新莊區",
-      "新店區",
-      "土城區",
-      "蘆洲區",
-      "樹林區",
-      "汐止區",
-      "三峽區",
-      "淡水區",
-      "林口區",
-      "其他",
-    ];
-    const EMOJIS = {
-      台式料理: "🫕",
-      日式料理: "🍱",
-      中式料理: "🥢",
-      韓式料理: "🥘",
-      泰式料理: "🍲",
-      義式料理: "🍝",
-      美式餐廳: "🍔",
-      咖啡廳: "☕",
-      手搖飲料: "🧋",
-      "早餐/豆漿": "🥣",
-      火鍋: "🍲",
-      "燒烤/串燒": "🔥",
-      海鮮: "🦐",
-      "甜點/冰品": "🍰",
-      麵包烘焙: "🥐",
-      夜市小吃: "🧆",
-      台式小吃: "🥟",
-      牛肉麵: "🍜",
-      "小籠包/點心": "🥟",
-      拉麵店: "🍜",
-      鐵板燒: "🍳",
-      居酒屋: "🍶",
-      餐酒館: "🍷",
-      "素食/蔬食": "🥗",
-      健康餐盒: "🍱",
-      速食: "🍟",
-      生鮮超市: "🛒",
-      便利商店: "🏪",
-      藥妝保健: "鍵",
-      生活雜貨: "🛍️",
-      伴手禮: "🎁",
-      創意料理: "🍽️",
-      "西式/創意": "🍝",
-      "藥膳/湯品": "🍖",
-      其他: "🍴",
-    };
+                  return (
+                    <div
+                      key={idx}
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns: "35px 1fr", // 您要求的 35px
+                        alignItems: "start",
+                        fontWeight: isToday ? 800 : 400,
+                        color: isToday ? "var(--red)" : "inherit",
+                      }}
+                    >
+                      <span style={{ opacity: 0.75, textAlign: "left" }}>{label}</span>
+                      <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+                        {/* 將內容根據逗號拆分為多行 */}
+                        <span>{formatHoursContent(line.content)}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        );
+      }
 
-    function normalizeCategory(value) {
-      const raw = String(value || "").trim();
-      if (!raw) return "其他";
-      if (CATS.includes(raw)) return raw;
-
-      const normalized = raw.toLowerCase().replace(/[｜|／]/g, "/").replace(/\s+/g, "");
-      const aliases = [
-        ["咖啡廳", ["咖啡", "cafe", "coffee"]],
-        ["義式料理", ["義式", "義大利", "披薩", "pizza", "pasta", "意大利餐廳"]],
-        ["日式料理", ["日式", "日本", "壽司", "丼"]],
-        ["韓式料理", ["韓式", "韓國"]],
-        ["泰式料理", ["泰式", "泰國"]],
-        ["中式料理", ["中式", "中國", "川菜", "港式"]],
-        ["台式料理", ["台式", "熱炒"]],
-        ["台式小吃", ["小吃", "滷味", "鹽酥", "蚵仔", "肉圓", "臭豆腐"]],
-        ["夜市小吃", ["夜市"]],
-        ["拉麵店", ["拉麵"]],
-        ["早餐/豆漿", ["早餐", "豆漿"]],
-        ["早午餐", ["早午餐餐廳", "brunch", "早午餐"]],
-        ["手搖飲料", ["手搖", "飲料", "珍奶", "奶茶"]],
-        ["甜點/冰品", ["甜點", "冰品", "冰店", "蛋糕", "布丁"]],
-        ["燒烤/串燒", ["燒烤", "串燒", "烤肉", "炭烤"]],
-        ["美式餐廳", ["美式", "漢堡", "牛排", "steak", "burger"]],
-        ["西式/創意", ["西式", "創意", "異國"]],
-        ["素食/蔬食", ["素食", "蔬食", "vegan", "vegetarian"]],
+      const CATS = [
+        "台式料理",
+        "日式料理",
+        "中式料理",
+        "韓式料理",
+        "泰式料理",
+        "義式料理",
+        "美式餐廳",
+        "牛排",
+        "咖哩",
+        "咖啡廳",
+        "手搖飲料",
+        "早餐/豆漿",
+        "早午餐",
+        "火鍋",
+        "燒烤/串燒",
+        "海鮮",
+        "甜點/冰品",
+        "麵包烘焙",
+        "夜市小吃",
+        "台式小吃",
+        "牛肉麵",
+        "小籠包/點心",
+        "拉麵店",
+        "鐵板燒",
+        "居酒屋",
+        "餐酒館",
+        "素食/蔬食",
+        "健康餐盒",
+        "速食",
+        "生鮮超市",
+        "便利商店",
+        "藥妝保健",
+        "生活雜貨",
+        "伴手禮",
+        "創意料理",
+        "西式/創意",
+        "藥膳/湯品",
+        "南洋料理",
+        "越南料理",
+        "新加坡料理",
+        "馬來西亞料理",
+        "印度料理",
+        "墨西哥料理",
+        "法式料理",
+        "德式料理",
+        "西班牙料理",
+        "歐美料理",
+        "港式飲茶",
+        "粵菜",
+        "川菜",
+        "湘菜",
+        "壽司店",
+        "漢堡店",
+        "披薩店",
+        "炸雞店",
+        "舒芙蕾/鬆餅",
+        "私廚料理",
+        "景觀餐廳",
+        "親子餐廳",
+        "寵物友善餐廳",
+        "自助餐/吃到飽",
+        "傳統市場",
+        "美食廣場",
+        "酒吧/Lounge",
+        "精釀啤酒",
+        "威士忌吧",
+        "深夜食堂",
+        "購物中心",
+        "百貨公司",
+        "文具店",
+        "書店",
+        "花店",
+        "運動用品",
+        "服飾店",
+        "鞋店",
+        "寵物用品",
+        "五金行",
+        "其他",
       ];
+      const DISTS = [
+        "中正區",
+        "萬華區",
+        "大同區",
+        "中山區",
+        "松山區",
+        "大安區",
+        "信義區",
+        "內湖區",
+        "南港區",
+        "士林區",
+        "北投區",
+        "文山區",
+        "板橋區",
+        "三重區",
+        "中和區",
+        "永和區",
+        "新莊區",
+        "新店區",
+        "土城區",
+        "蘆洲區",
+        "樹林區",
+        "汐止區",
+        "三峽區",
+        "淡水區",
+        "林口區",
+        "其他",
+      ];
+      const EMOJIS = {
+        // --- 現有類別 ---
+        台式料理: "🫕",
+        日式料理: "🍱",
+        中式料理: "🥢",
+        韓式料理: "🥘",
+        泰式料理: "🍲",
+        義式料理: "🍝",
+        美式餐廳: "🍔",
+        咖啡廳: "☕",
+        手搖飲料: "🧋",
+        "早餐/豆漿": "🥣",
+        早午餐: "🥪",
+        火鍋: "🍲",
+        "燒烤/串燒": "🔥",
+        海鮮: "🦐",
+        "甜點/冰品": "🍰",
+        麵包烘焙: "🥐",
+        夜市小吃: "🧆",
+        台式小吃: "🥟",
+        牛肉麵: "🍜",
+        "小籠包/點心": "🥟",
+        拉麵店: "🍜",
+        鐵板燒: "🍳",
+        居酒屋: "🍶",
+        餐酒館: "🍷",
+        "素食/蔬食": "🥗",
+        健康餐盒: "🍱",
+        速食: "🍟",
+        生鮮超市: "🛒",
+        便利商店: "🏪",
+        藥妝保健: "💊",
+        生活雜貨: "🛍️",
+        伴手禮: "🎁",
+        創意料理: "🍽️",
+        "西式/創意": "🍝",
+        "藥膳/湯品": "🍖",
+        其他: "🍴",
 
-      const matched = aliases.find(([, words]) => words.some((word) => normalized.includes(word.toLowerCase())));
-      return matched ? matched[0] : "其他";
-    }
-
-    function normalizeDistrict(value) {
-      const raw = String(value || "").trim();
-      if (!raw) return "其他";
-      if (DISTS.includes(raw)) return raw;
-
-      const normalized = raw.replace(/\s+/g, "");
-      const matched = DISTS.find((dist) => dist !== "其他" && (normalized.includes(dist) || normalized.includes(dist.replace(/區$/, ""))));
-      return matched || "其他";
-    }
-
-    function normalizeWeekdayLine(line) {
-      const dayMap = {
-        Sunday: "週日",
-        Monday: "週一",
-        Tuesday: "週二",
-        Wednesday: "週三",
-        Thursday: "週四",
-        Friday: "週五",
-        Saturday: "週六",
+        // --- 新增類別 ---
+        南洋料理: "🍛",
+        越南料理: "🥣",
+        新加坡料理: "🦁",
+        馬來西亞料理: "🥘",
+        印度料理: "🫓",
+        墨西哥料理: "🌮",
+        法式料理: "🗼",
+        德式料理: "🥨",
+        西班牙料理: "🥘",
+        歐美料理: "🍴",
+        港式飲茶: "🍵",
+        粵菜: "🥟",
+        川菜: "🌶️",
+        壽司店: "🍣",
+        漢堡店: "🍔",
+        披薩店: "🍕",
+        炸雞店: "🍗",
+        "舒芙蕾/鬆餅": "🥞",
+        私廚料理: "👨‍🍳",
+        景觀餐廳: "🏙️",
+        親子餐廳: "🎠",
+        寵物友善餐廳: "🐾",
+        "自助餐/吃到飽": "🍽️",
+        傳統市場: "🧺",
+        美食廣場: "🏢",
+        "酒吧/Lounge": "🍸",
+        精釀啤酒: "🍺",
+        威士忌吧: "🥃",
+        深夜食堂: "🌙",
+        購物中心: "🏬",
+        百貨公司: "🏢",
+        文具店: "✏️",
+        書店: "📚",
+        花店: "💐",
+        運動用品: "👟",
+        服飾店: "👕",
+        鞋店: "👞",
+        寵物用品: "🐱",
+        五金行: "🔨",
       };
-      return String(line || "").replace(/^(Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday)\s*:/i, (match, day) => {
-        const key = day.slice(0, 1).toUpperCase() + day.slice(1).toLowerCase();
-        return `${dayMap[key]}:`;
-      });
-    }
 
-    function normalizeOpeningHours(value) {
-      if (!value) return "未填寫";
-      if (Array.isArray(value)) return value.filter(Boolean).map(normalizeWeekdayLine).join("\n") || "未填寫";
-      if (typeof value === "object") {
-        if (Array.isArray(value.weekday_text)) return normalizeOpeningHours(value.weekday_text);
-        if (Array.isArray(value.weekdayText)) return normalizeOpeningHours(value.weekdayText);
-        if (Array.isArray(value.weekdayDescriptions)) return normalizeOpeningHours(value.weekdayDescriptions);
-        if (Array.isArray(value.weekday_descriptions)) return normalizeOpeningHours(value.weekday_descriptions);
+      function normalizeCategory(value) {
+        const raw = String(value || "").trim();
+        if (!raw) return "其他";
+        if (CATS.includes(raw)) return raw;
+
+        const normalized = raw
+          .toLowerCase()
+          .replace(/[｜|／]/g, "/")
+          .replace(/\s+/g, "");
+        const aliases = [
+          // --- 料理類別擴充 ---
+          ["咖啡廳", ["咖啡", "cafe", "coffee", "咖啡館", "咖啡專賣店"]],
+          ["義式料理", ["義式", "義大利", "披薩", "pizza", "pasta", "意大利餐廳", "意式"]],
+          ["日式料理", ["日式", "日本", "壽司", "丼", "定食", "和食", "刺身"]],
+          ["韓式料理", ["韓式", "韓國", "韓食", "泡菜", "石鍋"]],
+          ["泰式料理", ["泰式", "泰國", "泰國菜", "泰食"]],
+          ["中式料理", ["中式", "中國", "川菜", "港式", "粵菜", "湘菜", "上海菜"]],
+          ["台式料理", ["台式", "熱炒", "台菜", "客家菜"]],
+          ["台式小吃", ["小吃", "滷味", "鹽酥", "蚵仔", "肉圓", "臭豆腐", "羹", "切仔麵"]],
+          ["牛肉麵", ["牛肉麵", "beef noodle"]],
+          ["拉麵店", ["拉麵", "ramen"]],
+          ["火鍋", ["火鍋", "麻辣鍋", "涮涮鍋", "hot pot", "鍋物"]],
+          ["燒烤/串燒", ["燒烤", "串燒", "烤肉", "炭烤", "燒肉", "bbq", "yakiniku"]],
+          ["居酒屋", ["居酒屋", "izakaya"]],
+          ["餐酒館", ["餐酒館", "bistro", "酒吧", "bar", "pub"]],
+          ["南洋料理", ["越南", "星馬", "馬來西亞", "新加坡", "印尼", "東南亞"]],
+          ["歐美料理", ["法式", "德國", "西班牙", "地中海", "墨西哥", "法理", "西餐廳"]],
+
+          // --- 早餐與輕食 ---
+          ["早餐/豆漿", ["早餐", "豆漿", "早餐店"]],
+          ["早午餐", ["早午餐餐廳", "brunch", "早午餐"]],
+          ["麵包烘焙", ["麵包", "烘焙", "bakery", "甜甜圈", "貝果"]],
+          ["甜點/冰品", ["甜點", "冰品", "冰店", "蛋糕", "布丁", "下午茶", "可麗餅", "鬆餅"]],
+          ["手搖飲料", ["手搖", "飲料", "珍奶", "奶茶", "果汁", "飲品"]],
+
+          // --- 快餐與美式 ---
+          ["美式餐廳", ["美式", "漢堡", "牛排", "steak", "burger"]],
+          ["速食", ["速食", "fast food", "麥當勞", "肯德基", "摩斯", "炸雞"]],
+          ["鐵板燒", ["鐵板燒", "teppanyaki"]],
+
+          // --- 健康與特殊飲食 ---
+          ["素食/蔬食", ["素食", "蔬食", "vegan", "vegetarian", "養生"]],
+          ["健康餐盒", ["健康餐", "低卡", "健身餐", "水煮", "輕食"]],
+
+          // --- 生活與零售 (可選) ---
+          ["生鮮超市", ["超市", "超級市場", "supermarket", "全聯", "家樂福"]],
+          ["便利商店", ["便利商店", "超商", "7-11", "全家", "convenience"]],
+          ["藥妝保健", ["藥妝", "藥局", "屈臣氏", "康是美", "pharmacy"]],
+          ["生活雜貨", ["生活百貨", "雜貨", "五金", "大創", "muji", "無印良品"]],
+        ];
+
+        const matched = aliases.find(([, words]) => words.some((word) => normalized.includes(word.toLowerCase())));
+        return matched ? matched[0] : "其他";
+      }
+
+      function normalizeDistrict(value) {
+        const raw = String(value || "").trim();
+        if (!raw) return "其他";
+        if (DISTS.includes(raw)) return raw;
+
+        const normalized = raw.replace(/\s+/g, "");
+        const matched = DISTS.find((dist) => dist !== "其他" && (normalized.includes(dist) || normalized.includes(dist.replace(/區$/, ""))));
+        return matched || "其他";
+      }
+
+      function normalizeWeekdayLine(line) {
+        const dayMap = {
+          Sunday: "週日",
+          Monday: "週一",
+          Tuesday: "週二",
+          Wednesday: "週三",
+          Thursday: "週四",
+          Friday: "週五",
+          Saturday: "週六",
+        };
+        return String(line || "").replace(/^(Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday)\s*:/i, (match, day) => {
+          const key = day.slice(0, 1).toUpperCase() + day.slice(1).toLowerCase();
+          return `${dayMap[key]}:`;
+        });
+      }
+
+      function normalizeOpeningHours(value) {
+        if (!value) return "未填寫";
+        if (Array.isArray(value)) return value.filter(Boolean).map(normalizeWeekdayLine).join("\n") || "未填寫";
+        if (typeof value === "object") {
+          if (Array.isArray(value.weekday_text)) return normalizeOpeningHours(value.weekday_text);
+          if (Array.isArray(value.weekdayText)) return normalizeOpeningHours(value.weekdayText);
+          if (Array.isArray(value.weekdayDescriptions)) return normalizeOpeningHours(value.weekdayDescriptions);
+          if (Array.isArray(value.weekday_descriptions)) return normalizeOpeningHours(value.weekday_descriptions);
+          return "未填寫";
+        }
+        return String(value).split("\n").map(normalizeWeekdayLine).join("\n").trim() || "未填寫";
+      }
+
+      function hasWeeklyOpeningHours(value) {
+        const normalized = normalizeOpeningHours(value);
+        const days = normalized.match(/(週|星期)[日一二三四五六]/g) || [];
+        return new Set(days).size >= 5 || normalized.split("\n").filter(Boolean).length >= 5;
+      }
+
+      function pickOpeningHours(source) {
+        if (!source) return "未填寫";
+        const candidates = [
+          source.weekday_text,
+          source.weekdayText,
+          source.weekdayDescriptions,
+          source.weekday_descriptions,
+          source.regularOpeningHours,
+          source.regular_opening_hours,
+          source.currentOpeningHours,
+          source.current_opening_hours,
+          source.opening_hours,
+          source.openingHours,
+          source.place?.regularOpeningHours,
+          source.place?.regular_opening_hours,
+          source.place?.currentOpeningHours,
+          source.place?.current_opening_hours,
+          source.place?.opening_hours,
+          source.result?.regularOpeningHours,
+          source.result?.regular_opening_hours,
+          source.result?.currentOpeningHours,
+          source.result?.current_opening_hours,
+          source.result?.opening_hours,
+          source.hours,
+          source["營業時間"],
+          source.openHours,
+        ];
+
+        for (const candidate of candidates) {
+          const normalized = normalizeOpeningHours(candidate);
+          if (normalized !== "未填寫") return normalized;
+        }
         return "未填寫";
       }
-      return String(value).split("\n").map(normalizeWeekdayLine).join("\n").trim() || "未填寫";
-    }
 
-    function hasWeeklyOpeningHours(value) {
-      const normalized = normalizeOpeningHours(value);
-      const days = normalized.match(/(週|星期)[日一二三四五六]/g) || [];
-      return new Set(days).size >= 5 || normalized.split("\n").filter(Boolean).length >= 5;
-    }
-
-    function pickOpeningHours(source) {
-      if (!source) return "未填寫";
-      const candidates = [
-        source.weekday_text,
-        source.weekdayText,
-        source.weekdayDescriptions,
-        source.weekday_descriptions,
-        source.regularOpeningHours,
-        source.regular_opening_hours,
-        source.currentOpeningHours,
-        source.current_opening_hours,
-        source.opening_hours,
-        source.openingHours,
-        source.place?.regularOpeningHours,
-        source.place?.regular_opening_hours,
-        source.place?.currentOpeningHours,
-        source.place?.current_opening_hours,
-        source.place?.opening_hours,
-        source.result?.regularOpeningHours,
-        source.result?.regular_opening_hours,
-        source.result?.currentOpeningHours,
-        source.result?.current_opening_hours,
-        source.result?.opening_hours,
-        source.hours,
-        source["營業時間"],
-        source.openHours,
-      ];
-
-      for (const candidate of candidates) {
-        const normalized = normalizeOpeningHours(candidate);
-        if (normalized !== "未填寫") return normalized;
+      function normalizeRecord(r) {
+        if (!r) return r;
+        const category = normalizeCategory(r.category || r.type || r["類型"] || r["餐廳類型"]) || "其他";
+        const district = normalizeDistrict(r.district || r["行政區"] || r["區域"]);
+        const openingHours = pickOpeningHours(r);
+        const mapLink = r.map_link || r.mapLink || r["地圖連結"] || r["Google Maps"] || "#";
+        return {
+          ...r,
+          district,
+          category,
+          opening_hours: openingHours,
+          map_link: mapLink,
+          emoji: r.emoji || EMOJIS[category] || "🍴",
+        };
       }
-      return "未填寫";
-    }
 
-    function normalizeRecord(r) {
-      if (!r) return r;
-      const category = normalizeCategory(r.category || r.type || r["類型"] || r["餐廳類型"]) || "其他";
-      const district = normalizeDistrict(r.district || r["行政區"] || r["區域"]);
-      const openingHours = pickOpeningHours(r);
-      const mapLink = r.map_link || r.mapLink || r["地圖連結"] || r["Google Maps"] || "#";
-      return {
-        ...r,
-        district,
-        category,
-        opening_hours: openingHours,
-        map_link: mapLink,
-        emoji: r.emoji || EMOJIS[category] || "🍴",
-      };
-    }
-
-    /** --- 餐廳展示元件 --- **/
-    function GridCard({ r, onOpen }) {
-      const isOpen = checkIsOpen(r.opening_hours);
-      return (
-        <div
-          onClick={() => onOpen(r)}
-          style={{
-            background: "var(--card)",
-            borderRadius: 20,
-            overflow: "hidden",
-            cursor: "pointer",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
-            transition: "transform 0.2s",
-          }}
-        >
-          <div style={{ height: 140, background: "var(--card-bg)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <span style={{ fontSize: 48 }}>{r.emoji || "🍴"}</span>
-          </div>
+      /** --- 餐廳展示元件 --- **/
+      function GridCard({ r, onOpen }) {
+        const isOpen = checkIsOpen(r.opening_hours);
+        return (
           <div
+            onClick={() => onOpen(r)}
             style={{
-              padding: "14px 16px",
-              background: "#fff",
-              color: "var(--t1)",
-              minHeight: 145,
-              display: "flex",
-              flexDirection: "column",
-              gap: 8,
+              background: "var(--card)",
+              borderRadius: 20,
+              overflow: "hidden",
+              cursor: "pointer",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+              transition: "transform 0.2s",
             }}
           >
+            <div style={{ height: 140, background: "var(--card-bg)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <span style={{ fontSize: 48 }}>{r.emoji || "🍴"}</span>
+            </div>
             <div
               style={{
+                padding: "14px 16px",
+                background: "#fff",
+                color: "var(--t1)",
+                minHeight: 145,
                 display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
+                flexDirection: "column",
                 gap: 8,
               }}
             >
-              <StatusPill isOpen={isOpen} />
-              <div style={{ display: "flex", alignItems: "center", gap: 3 }}>
-                <Stars rating={r.rating} s={10} />
-                <span style={{ fontSize: 12, fontWeight: 800, color: "#000" }}>{r.rating}</span>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: 8,
+                }}
+              >
+                <StatusPill isOpen={isOpen} />
+                <div style={{ display: "flex", alignItems: "center", gap: 3 }}>
+                  <Stars rating={r.rating} s={10} />
+                  <span style={{ fontSize: 12, fontWeight: 800, color: "#000" }}>{r.rating}</span>
+                </div>
+              </div>
+              <div style={{ fontSize: 16, fontWeight: 800, color: "var(--t1)", letterSpacing: "-0.01em" }}>{r.name}</div>
+              <div style={{ fontSize: 11, color: "var(--t2)", display: "flex", alignItems: "center", gap: 4 }}>
+                <PinIc s={11} />
+                {r.district} · {r.category}
+              </div>
+              <div style={{ marginTop: 2 }}>
+                <OpeningHoursDropdown hours={r.opening_hours} />
               </div>
             </div>
-            <div style={{ fontSize: 16, fontWeight: 800, color: "var(--t1)", letterSpacing: "-0.01em" }}>{r.name}</div>
-            <div style={{ fontSize: 11, color: "var(--t2)", display: "flex", alignItems: "center", gap: 4 }}>
-              <PinIc s={11} />
-              {r.district} · {r.category}
-            </div>
-            <div style={{ marginTop: 2 }}>
-              <OpeningHoursDropdown hours={r.opening_hours} />
-            </div>
           </div>
-        </div>
-      );
-    }
+        );
+      }
 
-    function ListItem({ r, onOpen }) {
-      return (
-        <div
-          onClick={() => onOpen(r)}
-          style={{
-            background: "var(--card)",
-            borderRadius: 14,
-            padding: "12px 16px",
-            cursor: "pointer",
-            boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
-            display: "flex",
-            alignItems: "center",
-            gap: 14,
-            transition: "background 0.15s",
-          }}
-        >
+      function ListItem({ r, onOpen }) {
+        return (
           <div
+            onClick={() => onOpen(r)}
             style={{
-              width: 50,
-              height: 50,
-              background: "#f5f5f5",
-              borderRadius: 12,
+              background: "var(--card)",
+              borderRadius: 14,
+              padding: "12px 16px",
+              cursor: "pointer",
+              boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
               display: "flex",
               alignItems: "center",
-              justifyContent: "center",
-              fontSize: 28,
-              flexShrink: 0,
+              gap: 14,
+              transition: "background 0.15s",
             }}
           >
-            {r.emoji || "🍴"}
-          </div>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6, flexWrap: "wrap" }}>
-              <StatusPill isOpen={checkIsOpen(r.opening_hours)} />
-              <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                <Stars rating={r.rating} s={10} />
-                <span style={{ fontSize: 12, fontWeight: 800, color: "var(--amber)" }}>{r.rating}</span>
-              </div>
-            </div>
             <div
               style={{
-                fontSize: 15,
-                fontWeight: 800,
-                color: "#111",
-                marginBottom: 2,
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-              }}
-            >
-              {r.name}
-            </div>
-            <div style={{ fontSize: 11, color: "#888", display: "flex", alignItems: "center", gap: 4, marginBottom: 4 }}>
-              {r.district} · {r.category}
-            </div>
-            <OpeningHoursDropdown hours={r.opening_hours} />
-          </div>
-        </div>
-      );
-    }
-
-    /** --- 彈出視窗 --- **/
-    function DetailModal({ r, onClose, onDelete, onEdit }) {
-      const isOpen = checkIsOpen(r.opening_hours);
-      const isCustom = r.source === "custom";
-      return (
-        <div
-          onClick={onClose}
-          style={{
-            position: "fixed",
-            inset: 0,
-            zIndex: 600,
-            background: "rgba(10,10,10,0.75)",
-            backdropFilter: "blur(8px)",
-            display: "flex",
-            alignItems: "flex-end",
-            justifyContent: "center",
-            animation: "fadeIn 0.18s ease",
-          }}
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            style={{
-              background: isCustom ? "#FFF8F2" : "var(--card)",
-              borderRadius: "24px 24px 0 0",
-              width: "100%",
-              maxWidth: 500,
-              maxHeight: "92vh",
-              overflow: "auto",
-              animation: "slideUp 0.26s cubic-bezier(0.22,1,0.36,1)",
-              boxShadow: "0 -8px 40px rgba(0,0,0,0.22)",
-              paddingBottom: 40,
-            }}
-          >
-            <div style={{ display: "flex", justifyContent: "center", padding: "14px 0" }}>
-              <div style={{ width: 38, height: 4, borderRadius: 99, background: "rgba(0,0,0,0.1)" }} />
-            </div>
-            <div
-              style={{
-                height: 210,
-                position: "relative",
-                margin: "0 16px",
-                borderRadius: 18,
-                overflow: "hidden",
-                background: "var(--card-bg)",
+                width: 50,
+                height: 50,
+                background: "#f5f5f5",
+                borderRadius: 12,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
+                fontSize: 28,
+                flexShrink: 0,
               }}
             >
-              <span style={{ fontSize: 64 }}>{r.emoji || "🍴"}</span>
-              <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 60%) Fitz" }} />
-              <button
-                onClick={onClose}
+              {r.emoji || "🍴"}
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6, flexWrap: "wrap" }}>
+                <StatusPill isOpen={checkIsOpen(r.opening_hours)} />
+                <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                  <Stars rating={r.rating} s={10} />
+                  <span style={{ fontSize: 12, fontWeight: 800, color: "var(--amber)" }}>{r.rating}</span>
+                </div>
+              </div>
+              <div
                 style={{
-                  position: "absolute",
-                  top: 12,
-                  right: 12,
-                  width: 32,
-                  height: 32,
-                  borderRadius: 99,
-                  border: "none",
-                  background: "rgba(0,0,0,0.35)",
-                  color: "#fff",
-                  cursor: "pointer",
+                  fontSize: 15,
+                  fontWeight: 800,
+                  color: "#111",
+                  marginBottom: 2,
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {r.name}
+              </div>
+              <div style={{ fontSize: 11, color: "#888", display: "flex", alignItems: "center", gap: 4, marginBottom: 4 }}>
+                {r.district} · {r.category}
+              </div>
+              <OpeningHoursDropdown hours={r.opening_hours} />
+            </div>
+          </div>
+        );
+      }
+
+      /** --- 彈出視窗 --- **/
+      function DetailModal({ r, onClose, onDelete, onEdit }) {
+        const isOpen = checkIsOpen(r.opening_hours);
+        const isCustom = r.source === "custom";
+        return (
+          <div
+            onClick={onClose}
+            style={{
+              position: "fixed",
+              inset: 0,
+              zIndex: 600,
+              background: "rgba(10,10,10,0.75)",
+              backdropFilter: "blur(8px)",
+              display: "flex",
+              alignItems: "flex-end",
+              justifyContent: "center",
+              animation: "fadeIn 0.18s ease",
+            }}
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                background: isCustom ? "#FFF8F2" : "var(--card)",
+                borderRadius: "24px 24px 0 0",
+                width: "100%",
+                maxWidth: 500,
+                maxHeight: "92vh",
+                overflow: "auto",
+                animation: "slideUp 0.26s cubic-bezier(0.22,1,0.36,1)",
+                boxShadow: "0 -8px 40px rgba(0,0,0,0.22)",
+                paddingBottom: 40,
+              }}
+            >
+              <div style={{ display: "flex", justifyContent: "center", padding: "14px 0" }}>
+                <div style={{ width: 38, height: 4, borderRadius: 99, background: "rgba(0,0,0,0.1)" }} />
+              </div>
+              <div
+                style={{
+                  height: 210,
+                  position: "relative",
+                  margin: "0 16px",
+                  borderRadius: 18,
+                  overflow: "hidden",
+                  background: "var(--card-bg)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                 }}
               >
-                <XIc s={13} />
-              </button>
-              <div style={{ position: "absolute", bottom: 14, left: 16 }}>
-                <div style={{ fontSize: 24, fontWeight: 800, color: "#000", marginBottom: 6 }}>{r.name}</div>
-                <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-                  <Stars rating={r.rating} s={14} />
-                  <span style={{ fontSize: 14, color: "#000", fontWeight: 700 }}>{r.rating}</span>
-                </div>
-              </div>
-            </div>
-            <div style={{ padding: "20px 20px" }}>
-              <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 16 }}>
-                <StatusPill isOpen={isOpen} />
-                <span style={{ fontSize: 12, color: "var(--t2)" }}>
-                  <PinIc s={12} />
-                  {r.district} · {r.category}
-                </span>
-              </div>
-              <div style={{ marginBottom: 20 }}>
-                <OpeningHoursDropdown hours={r.opening_hours} />
-              </div>
-              {r.note && (
-                <div
+                <span style={{ fontSize: 64 }}>{r.emoji || "🍴"}</span>
+                <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 60%) Fitz" }} />
+                <button
+                  onClick={onClose}
                   style={{
-                    background: "#FFF8F0",
-                    borderRadius: 12,
-                    padding: "12px 15px",
-                    fontSize: 13,
-                    lineHeight: 1.75,
-                    marginBottom: 18,
-                    whiteSpace: "pre-wrap",
-                    background: "#f9f9f9",
-                  }}
-                >
-                  {r.note}
-                </div>
-              )}
-              <div style={{ display: "flex", gap: 9 }}>
-                <a
-                  href={r.map_link || "#"}
-                  target="_blank"
-                  rel="noreferrer"
-                  style={{
-                    flex: 1,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    padding: "13px 0",
-                    borderRadius: 12,
-                    background: "var(--red)",
+                    position: "absolute",
+                    top: 12,
+                    right: 12,
+                    width: 32,
+                    height: 32,
+                    borderRadius: 99,
+                    border: "none",
+                    background: "rgba(0,0,0,0.35)",
                     color: "#fff",
-                    fontSize: 14,
-                    fontWeight: 700,
-                    textDecoration: "none",
-                  }}
-                >
-                  Google Maps
-                </a>
-                <button
-                  onClick={() => {
-                    onEdit(r);
-                    onClose();
-                  }}
-                  style={{
-                    width: 48,
-                    height: 48,
-                    borderRadius: 12,
-                    border: "1.5px solid #ddd",
-                    background: "#f9f9f9",
                     cursor: "pointer",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                   }}
                 >
-                  <EditIc />
+                  <XIc s={13} />
                 </button>
-                <button
-                  onClick={() => {
-                    onDelete(r.id);
-                    onClose();
-                  }}
-                  style={{
-                    width: 48,
-                    height: 48,
-                    borderRadius: 12,
-                    border: "1.5px solid #FECACA",
-                    background: "#FEF2F2",
-                    color: "var(--red)",
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <TrashIc />
-                </button>
+                <div style={{ position: "absolute", bottom: 14, left: 16 }}>
+                  <div style={{ fontSize: 24, fontWeight: 800, color: "#000", marginBottom: 6 }}>{r.name}</div>
+                  <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                    <Stars rating={r.rating} s={14} />
+                    <span style={{ fontSize: 14, color: "#000", fontWeight: 700 }}>{r.rating}</span>
+                  </div>
+                </div>
+              </div>
+              <div style={{ padding: "20px 20px" }}>
+                <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 16 }}>
+                  <StatusPill isOpen={isOpen} />
+                  <span style={{ fontSize: 12, color: "var(--t2)" }}>
+                    <PinIc s={12} />
+                    {r.district} · {r.category}
+                  </span>
+                </div>
+                <div style={{ marginBottom: 20 }}>
+                  <OpeningHoursDropdown hours={r.opening_hours} />
+                </div>
+                {r.note && (
+                  <div
+                    style={{
+                      background: "#FFF8F0",
+                      borderRadius: 12,
+                      padding: "12px 15px",
+                      fontSize: 13,
+                      lineHeight: 1.75,
+                      marginBottom: 18,
+                      whiteSpace: "pre-wrap",
+                      background: "#f9f9f9",
+                    }}
+                  >
+                    {r.note}
+                  </div>
+                )}
+                <div style={{ display: "flex", gap: 9 }}>
+                  <a
+                    href={r.map_link || "#"}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{
+                      flex: 1,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      padding: "13px 0",
+                      borderRadius: 12,
+                      background: "var(--red)",
+                      color: "#fff",
+                      fontSize: 14,
+                      fontWeight: 700,
+                      textDecoration: "none",
+                    }}
+                  >
+                    Google Maps
+                  </a>
+                  <button
+                    onClick={() => {
+                      onEdit(r);
+                      onClose();
+                    }}
+                    style={{
+                      width: 48,
+                      height: 48,
+                      borderRadius: 12,
+                      border: "1.5px solid #ddd",
+                      background: "#f9f9f9",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <EditIc />
+                  </button>
+                  <button
+                    onClick={() => {
+                      onDelete(r.id);
+                      onClose();
+                    }}
+                    style={{
+                      width: 48,
+                      height: 48,
+                      borderRadius: 12,
+                      border: "1.5px solid #FECACA",
+                      background: "#FEF2F2",
+                      color: "var(--red)",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <TrashIc />
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      );
-    }
-
-    function FormModal({ onClose, onSave, existingNames, initialData }) {
-      const isEdit = !!initialData;
-      const [name, setName] = React.useState(initialData?.name || "");
-      const [category, setCategory] = React.useState(initialData?.category || "");
-      const [district, setDistrict] = React.useState(initialData?.district || "");
-      const [rating, setRating] = React.useState(initialData?.rating || "4.0");
-      const [openHours, setOpenHours] = React.useState(initialData?.opening_hours || "");
-      const [mapLink, setMapLink] = React.useState(initialData?.map_link || "");
-      const [note, setNote] = React.useState(initialData?.note || "");
-      const [errors, setErrors] = React.useState({});
-      const [analyzing, setAnalyzing] = React.useState(false);
-      const [analyzeError, setAnalyzeError] = React.useState("");
-      const [categoryUnmatched, setCategoryUnmatched] = React.useState(false);
-
-      const handleAnalyze = async () => {
-        if (!mapLink.trim()) return;
-        setAnalyzing(true);
-        setAnalyzeError("");
-        try {
-          const res = await fetchWithRetry("https://api-taipei-food.xmoneydoge.com/analyze", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ url: mapLink, fullWeek: true, includeWeeklyHours: true }),
-          });
-          if (res.error) throw new Error(res.error);
-          if (res.name) setName(res.name);
-          const aiCategory = normalizeCategory(res.category);
-          setCategory(aiCategory);
-          setCategoryUnmatched(false);
-          const aiDistrict = normalizeDistrict(res.district || res.area || res.address || res["行政區"] || res["區域"]);
-          setDistrict(aiDistrict);
-          if (res.rating) setRating(parseFloat(res.rating).toFixed(1));
-          const aiOpenHours = pickOpeningHours(res);
-          if (aiOpenHours !== "未填寫") {
-            setOpenHours(aiOpenHours);
-            if (!hasWeeklyOpeningHours(aiOpenHours)) {
-              setAnalyzeError("目前 API 只回傳當天營業時間，尚未回傳一整週資料。");
-            }
-          }
-          if (res.note) setNote(res.note);
-        } catch (e) {
-          console.error(e);
-          setAnalyzeError(e.message || "解析失敗，請確認後端是否啟動");
-        } finally {
-          setAnalyzing(false);
-        }
-      };
-
-      function doConfirm() {
-        if (!name.trim()) return setErrors({ name: "必填" });
-        if (existingNames.has(name) && (!isEdit || initialData.name !== name)) return setErrors({ name: "已存在" });
-        const finalCat = normalizeCategory(category) || "其他";
-        onSave({
-          id: initialData?.id || "u_" + Date.now(),
-          name: name.trim(),
-          district: normalizeDistrict(district),
-          category: finalCat,
-          type: finalCat,
-          類型: finalCat,
-          餐廳類型: finalCat,
-          rating: parseFloat(rating).toFixed(1),
-          opening_hours: normalizeOpeningHours(openHours),
-          is_open: "DYNAMIC",
-          emoji: EMOJIS[finalCat] || "🍴",
-          note: note.trim(),
-          map_link: mapLink.trim() || "#",
-          source: "custom",
-        });
-        onClose();
+        );
       }
 
-      const fieldS = {
-        width: "100%",
-        padding: "10px 12px",
-        borderRadius: 9,
-        border: "1.5px solid #eee",
-        fontSize: 13,
-        background: "#f9f9f9",
-        outline: "none",
-        marginBottom: 10,
-      };
+      function FormModal({ onClose, onSave, existingNames, initialData }) {
+        const isEdit = !!initialData;
+        const [name, setName] = React.useState(initialData?.name || "");
+        const [category, setCategory] = React.useState(initialData?.category || "");
+        const [district, setDistrict] = React.useState(initialData?.district || "");
+        const [rating, setRating] = React.useState(initialData?.rating || "4.0");
+        const [openHours, setOpenHours] = React.useState(initialData?.opening_hours || "");
+        const [mapLink, setMapLink] = React.useState(initialData?.map_link || "");
+        const [note, setNote] = React.useState(initialData?.note || "");
+        const [errors, setErrors] = React.useState({});
+        const [analyzing, setAnalyzing] = React.useState(false);
+        const [analyzeError, setAnalyzeError] = React.useState("");
+        const [categoryUnmatched, setCategoryUnmatched] = React.useState(false);
 
-      return (
-        <div
-          onClick={onClose}
-          style={{
-            position: "fixed",
-            inset: 0,
-            zIndex: 700,
-            background: "rgba(10,10,10,0.78)",
-            backdropFilter: "blur(8px)",
-            display: "flex",
-            alignItems: "flex-end",
-            justifyContent: "center",
-            animation: "fadeIn 0.15s ease",
-          }}
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            style={{
-              background: "var(--card)",
-              borderRadius: "24px 24px 0 0",
-              width: "100%",
-              maxWidth: 480,
-              maxHeight: "92vh",
-              display: "flex",
-              flexDirection: "column",
-              animation: "slideUp 0.24s cubic-bezier(0.22,1,0.36,1)",
-              boxShadow: "0 -8px 40px rgba(0,0,0,0.22)",
-              overflow: "hidden",
-            }}
-          >
-            <div style={{ padding: "20px", overflowY: "auto" }}>
-              <div style={{ fontSize: 18, fontWeight: 800, marginBottom: 15 }}>{isEdit ? "編輯餐廳" : "新增餐廳"}</div>
-              {!isEdit && (
-                <>
-                  <label style={{ fontSize: 11, fontWeight: 700, color: "var(--red)", display: "block", marginBottom: 5 }}>查詢網址</label>
-                  <div style={{ display: "flex", gap: 8, marginBottom: 15 }}>
-                    <input
-                      value={mapLink}
-                      onChange={(e) => setMapLink(e.target.value)}
-                      placeholder="貼上網址..."
-                      style={{ ...fieldS, marginBottom: 0, flex: 1 }}
-                    />
-                    <button
-                      onClick={handleAnalyze}
-                      disabled={analyzing}
-                      style={{
-                        padding: "0 15px",
-                        borderRadius: 9,
-                        background: "#333",
-                        color: "#fff",
-                        fontWeight: 700,
-                        border: "none",
-                        cursor: "pointer",
-                      }}
-                    >
-                      {analyzing ? <Loader2 s={14} /> : "查詢"}
-                    </button>
-                  </div>
-                  {analyzeError && (
-                    <div style={{ color: "var(--red)", fontSize: 12, marginTop: -10, marginBottom: 10 }}>{analyzeError}</div>
-                  )}
-                </>
-              )}
-              <input
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="店名 *"
-                style={{ ...fieldS, borderColor: errors.name ? "red" : "#eee" }}
-              />
-              <div style={{ display: "flex", gap: 10 }}>
-                <select value={category} onChange={(e) => { setCategory(e.target.value); setCategoryUnmatched(false); }} style={{ ...fieldS, borderColor: categoryUnmatched ? "#f472b6" : "#eee", background: categoryUnmatched ? "#fff0f8" : "#f9f9f9" }}>
-                  <option value="" disabled>
-                    類型
-                  </option>
-                  {CATS.map((c) => (
-                    <option key={c} value={c}>
-                      {c}
-                    </option>
-                  ))}
-                </select>
-                <select value={district} onChange={(e) => setDistrict(e.target.value)} style={fieldS}>
-                  <option value="" disabled>
-                    區域
-                  </option>
-                  {DISTS.map((d) => (
-                    <option key={d} value={d}>
-                      {d}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div style={{ display: "flex", gap: 10, marginBottom: 10 }}>
-                <div style={{ flex: 1 }}>
-                  <label style={{ fontSize: 10 }}>評分</label>
-                  <input
-                    type="number"
-                    step="0.1"
-                    value={rating}
-                    onChange={(e) => setRating(e.target.value)}
-                    style={{ ...fieldS, marginBottom: 0 }}
-                  />
-                </div>
-                <div style={{ flex: 2 }}>
-                  <label style={{ fontSize: 10 }}>營業時間</label>
-                  <textarea
-                    value={openHours}
-                    onChange={(e) => setOpenHours(e.target.value)}
-                    placeholder={"週一: 11:00-21:00\n週二: 11:00-21:00"}
-                    style={{ ...fieldS, minHeight: 76, marginBottom: 0, resize: "vertical" }}
-                  />
-                </div>
-              </div>
-              <textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="筆記..." style={{ ...fieldS, height: 80 }} />
-              <button
-                onClick={doConfirm}
-                style={{
-                  width: "100%",
-                  padding: "14px",
-                  borderRadius: 11,
-                  background: "var(--red)",
-                  color: "#fff",
-                  fontWeight: 800,
-                  border: "none",
-                }}
-              >
-                儲存
-              </button>
-            </div>
-          </div>
-        </div>
-      );
-    }
+        const handleAnalyze = async () => {
+          if (!mapLink.trim()) return;
+          setAnalyzing(true);
+          setAnalyzeError("");
+          try {
+            const res = await fetchWithRetry("https://api-taipei-food.xmoneydoge.com/analyze", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ url: mapLink, fullWeek: true, includeWeeklyHours: true }),
+            });
+            if (res.error) throw new Error(res.error);
+            if (res.name) setName(res.name);
+            const aiCategory = normalizeCategory(res.category);
+            setCategory(aiCategory);
+            setCategoryUnmatched(false);
+            const aiDistrict = normalizeDistrict(res.district || res.area || res.address || res["行政區"] || res["區域"]);
+            setDistrict(aiDistrict);
+            if (res.rating) setRating(parseFloat(res.rating).toFixed(1));
+            const aiOpenHours = pickOpeningHours(res);
+            if (aiOpenHours !== "未填寫") {
+              setOpenHours(aiOpenHours);
+              if (!hasWeeklyOpeningHours(aiOpenHours)) {
+                setAnalyzeError("目前 API 只回傳當天營業時間，尚未回傳一整週資料。");
+              }
+            }
+            if (res.note) setNote(res.note);
+          } catch (e) {
+            console.error(e);
+            setAnalyzeError(e.message || "解析失敗，請確認後端是否啟動");
+          } finally {
+            setAnalyzing(false);
+          }
+        };
 
-    /** --- 主程式 --- **/
-    function App() {
-      const [data, setData] = React.useState([]);
-      const [deletedIds, setDeletedIds] = React.useState(() => new Set(JSON.parse(localStorage.getItem(LS_KEY + "_del") || "[]")));
-      const [editedItems, setEditedItems] = React.useState(() => {
-        const raw = localStorage.getItem(LS_KEY + "_edit");
-        try {
-          return new Map(JSON.parse(raw || "[]"));
-        } catch (e) {
-          return new Map();
-        }
-      });
-      const [loading, setLoading] = React.useState(true);
-      const [search, setSearch] = React.useState("");
-      const [detailR, setDetailR] = React.useState(null);
-      const [showAdd, setShowAdd] = React.useState(false);
-      const [editingR, setEditingR] = React.useState(null);
-      const [categoryF, setCategoryF] = React.useState(new Set());
-      const [view, setView] = React.useState("grid");
-
-      const loadData = async (isInit = false) => {
-        try {
-          const json = await fetchWithRetry(`${GAS_URL}?t=${Date.now()}`);
-          if (json.status === "success") setData((json.data || []).map(normalizeRecord));
-        } catch (e) {
-          console.error("載入失敗:", e);
-        } finally {
-          if (isInit) setLoading(false);
-        }
-      };
-
-      React.useEffect(() => {
-        loadData(true);
-        const timer = setInterval(() => loadData(false), 30000);
-        return () => clearInterval(timer);
-      }, []);
-
-      React.useEffect(() => {
-        localStorage.setItem(LS_KEY + "_del", JSON.stringify([...deletedIds]));
-        localStorage.setItem(LS_KEY + "_edit", JSON.stringify(Array.from(editedItems.entries())));
-      }, [deletedIds, editedItems]);
-
-      const handleAction = async (action, r) => {
-        const idStr = String(r.id || r);
-        const record = typeof r === "object" ? normalizeRecord(r) : r;
-        const payload = typeof record === "object" ? record : {};
-        if (action === "add") setData((prev) => [record, ...prev]);
-        if (action === "edit") setEditedItems((prev) => new Map(prev).set(idStr, record));
-        if (action === "delete") {
-          setDeletedIds((prev) => new Set(prev).add(idStr));
-          setData((prev) => prev.filter((x) => String(x.id) !== idStr));
-        }
-        try {
-          await fetchWithRetry(GAS_URL, {
-            method: "POST",
-            mode: "no-cors",
-            headers: { "Content-Type": "text/plain" },
-            body: JSON.stringify({ action, id: idStr, ...payload }),
+        function doConfirm() {
+          if (!name.trim()) return setErrors({ name: "必填" });
+          if (existingNames.has(name) && (!isEdit || initialData.name !== name)) return setErrors({ name: "已存在" });
+          const finalCat = normalizeCategory(category) || "其他";
+          onSave({
+            id: initialData?.id || "u_" + Date.now(),
+            name: name.trim(),
+            district: normalizeDistrict(district),
+            category: finalCat,
+            type: finalCat,
+            類型: finalCat,
+            餐廳類型: finalCat,
+            rating: parseFloat(rating).toFixed(1),
+            opening_hours: normalizeOpeningHours(openHours),
+            is_open: "DYNAMIC",
+            emoji: EMOJIS[finalCat] || "🍴",
+            note: note.trim(),
+            map_link: mapLink.trim() || "#",
+            source: "custom",
           });
-        } catch (e) {
-          console.error(e);
+          onClose();
         }
-      };
 
-      const allData = React.useMemo(() => {
-        const map = new Map();
-        data.forEach((r) => {
-          const idStr = String(r.id);
-          if (deletedIds.has(idStr)) return;
-          const final = normalizeRecord(editedItems.has(idStr) ? editedItems.get(idStr) : r);
-          if (final.name) map.set(final.name, final);
-        });
-        return Array.from(map.values());
-      }, [data, deletedIds, editedItems]);
+        const fieldS = {
+          width: "100%",
+          padding: "10px 12px",
+          borderRadius: 9,
+          border: "1.5px solid #eee",
+          fontSize: 13,
+          background: "#f9f9f9",
+          outline: "none",
+          marginBottom: 10,
+        };
 
-      const filtered = allData.filter(
-        (r) =>
-          (r.name + (r.district || "") + (r.category || "")).toLowerCase().includes(search.toLowerCase()) &&
-          (categoryF.size === 0 || categoryF.has(r.category)),
-      );
-
-      const handleEdit = (r) => {
-        setEditingR(r);
-      };
-
-      return (
-        <div style={{ minHeight: "100vh", background: "var(--bg)", display: "flex", flexDirection: "column" }}>
-          <nav
+        return (
+          <div
+            onClick={onClose}
             style={{
-              maxWidth: "1100px",
-              width: "100%",
-              margin: "auto",
-              position: "sticky",
-              top: 0,
-              zIndex: 300,
-              background: "rgba(24,24,24,0.92)",
-              backdropFilter: "blur(20px)",
-              height: 60,
+              position: "fixed",
+              inset: 0,
+              zIndex: 700,
+              background: "rgba(10,10,10,0.78)",
+              backdropFilter: "blur(8px)",
               display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              padding: "0 20px",
-              borderBottom: "1px solid rgba(255,255,255,0.06)",
+              alignItems: "flex-end",
+              justifyContent: "center",
+              animation: "fadeIn 0.15s ease",
             }}
           >
-            <div style={{ color: "#fff", fontSize: 18, fontWeight: 900 }}>美食口袋名單</div>
-            <button
-              onClick={() => setShowAdd(true)}
+            <div
+              onClick={(e) => e.stopPropagation()}
               style={{
-                padding: "8px 15px",
-                borderRadius: 9,
-                background: "var(--red)",
-                color: "#fff",
-                border: "none",
-                fontWeight: 700,
-                cursor: "pointer",
+                background: "var(--card)",
+                borderRadius: "24px 24px 0 0",
+                width: "100%",
+                maxWidth: 480,
+                maxHeight: "92vh",
+                display: "flex",
+                flexDirection: "column",
+                animation: "slideUp 0.24s cubic-bezier(0.22,1,0.36,1)",
+                boxShadow: "0 -8px 40px rgba(0,0,0,0.22)",
+                overflow: "hidden",
               }}
             >
-              新增
-            </button>
-          </nav>
-          <div
-            style={{
-              maxWidth: 1100,
-              margin: "0 auto",
-              padding: "10px 20px",
-              display: "flex",
-              gap: 6,
-              overflowX: "auto",
-              scrollbarWidth: "none",
-              width: "100%",
-            }}
-          >
-            <CatPill active={categoryF.size === 0} onClick={() => setCategoryF(new Set())}>
-              全部
-            </CatPill>
-            {[...new Set(allData.map((r) => r.category).filter(Boolean))].sort().map((c) => (
-              <CatPill
-                key={c}
-                active={categoryF.has(c)}
-                onClick={() => {
-                  const n = new Set(categoryF);
-                  n.has(c) ? n.delete(c) : n.add(c);
-                  setCategoryF(n);
-                }}
-              >
-                {c}
-              </CatPill>
-            ))}
-          </div>
-          <div style={{ padding: "15px 20px", background: "rgba(24,24,24,0.7)", position: "sticky", top: 60, zIndex: 200 }}>
-            <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", gap: 10, alignItems: "center" }}>
-              <div style={{ flex: 1, position: "relative" }}>
-                <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "rgba(255,255,255,0.3)" }}>
-                  <SearchIc s={15} />
-                </span>
+              <div style={{ padding: "20px", overflowY: "auto" }}>
+                <div style={{ fontSize: 18, fontWeight: 800, marginBottom: 15 }}>{isEdit ? "編輯餐廳" : "新增餐廳"}</div>
+                {!isEdit && (
+                  <>
+                    <label style={{ fontSize: 11, fontWeight: 700, color: "var(--red)", display: "block", marginBottom: 5 }}>查詢網址</label>
+                    <div style={{ display: "flex", gap: 8, marginBottom: 15 }}>
+                      <input
+                        value={mapLink}
+                        onChange={(e) => setMapLink(e.target.value)}
+                        placeholder="貼上網址..."
+                        style={{ ...fieldS, marginBottom: 0, flex: 1 }}
+                      />
+                      <button
+                        onClick={handleAnalyze}
+                        disabled={analyzing}
+                        style={{
+                          padding: "0 15px",
+                          borderRadius: 9,
+                          background: "#333",
+                          color: "#fff",
+                          fontWeight: 700,
+                          border: "none",
+                          cursor: "pointer",
+                        }}
+                      >
+                        {analyzing ? <Loader2 s={14} /> : "查詢"}
+                      </button>
+                    </div>
+                    {analyzeError && <div style={{ color: "var(--red)", fontSize: 12, marginTop: -10, marginBottom: 10 }}>{analyzeError}</div>}
+                  </>
+                )}
                 <input
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  placeholder="搜尋店名..."
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="店名 *"
+                  style={{ ...fieldS, borderColor: errors.name ? "red" : "#eee" }}
+                />
+                <div style={{ display: "flex", gap: 10 }}>
+                  <select
+                    value={category}
+                    onChange={(e) => {
+                      setCategory(e.target.value);
+                      setCategoryUnmatched(false);
+                    }}
+                    style={{ ...fieldS, borderColor: categoryUnmatched ? "#f472b6" : "#eee", background: categoryUnmatched ? "#fff0f8" : "#f9f9f9" }}
+                  >
+                    <option value="" disabled>
+                      類型
+                    </option>
+                    {CATS.map((c) => (
+                      <option key={c} value={c}>
+                        {c}
+                      </option>
+                    ))}
+                  </select>
+                  <select value={district} onChange={(e) => setDistrict(e.target.value)} style={fieldS}>
+                    <option value="" disabled>
+                      區域
+                    </option>
+                    {DISTS.map((d) => (
+                      <option key={d} value={d}>
+                        {d}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div style={{ display: "flex", gap: 10, marginBottom: 10 }}>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontSize: 10 }}>評分</label>
+                    <input
+                      type="number"
+                      step="0.1"
+                      value={rating}
+                      onChange={(e) => setRating(e.target.value)}
+                      style={{ ...fieldS, marginBottom: 0 }}
+                    />
+                  </div>
+                  <div style={{ flex: 2 }}>
+                    <label style={{ fontSize: 10 }}>營業時間</label>
+                    <textarea
+                      value={openHours}
+                      onChange={(e) => setOpenHours(e.target.value)}
+                      placeholder={"週一: 11:00-21:00\n週二: 11:00-21:00"}
+                      style={{ ...fieldS, minHeight: 76, marginBottom: 0, resize: "vertical" }}
+                    />
+                  </div>
+                </div>
+                <textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="筆記..." style={{ ...fieldS, height: 80 }} />
+                <button
+                  onClick={doConfirm}
                   style={{
                     width: "100%",
-                    padding: "10px 38px",
-                    borderRadius: 10,
-                    background: "rgba(255,255,255,0.1)",
+                    padding: "14px",
+                    borderRadius: 11,
+                    background: "var(--red)",
                     color: "#fff",
+                    fontWeight: 800,
                     border: "none",
-                    outline: "none",
-                  }}
-                />
-              </div>
-              <div style={{ display: "flex", background: "rgba(255,255,255,0.08)", borderRadius: 10, padding: 3 }}>
-                <button
-                  onClick={() => setView("grid")}
-                  style={{
-                    padding: 8,
-                    fontSize: 0,
-                    borderRadius: 8,
-                    border: "none",
-                    background: view === "grid" ? "rgba(255,255,255,0.15)" : "transparent",
-                    color: view === "grid" ? "#fff" : "rgba(255,255,255,0.4)",
-                    cursor: "pointer",
                   }}
                 >
-                  <GridIc />
-                </button>
-                <button
-                  onClick={() => setView("list")}
-                  style={{
-                    padding: 8,
-                    fontSize: 0,
-                    borderRadius: 8,
-                    border: "none",
-                    background: view === "list" ? "rgba(255,255,255,0.15)" : "transparent",
-                    color: view === "list" ? "#fff" : "rgba(255,255,255,0.4)",
-                    cursor: "pointer",
-                  }}
-                >
-                  <ListIc />
+                  儲存
                 </button>
               </div>
             </div>
           </div>
-          <main style={{ flex: 1, padding: "20px", maxWidth: 1100, margin: "0 auto", width: "100%" }}>
-            {loading ? (
-              <div style={{ textAlign: "center", paddingTop: 100 }}>
-                <Loader2 s={32} />
-              </div>
-            ) : (
-              <div
-                style={
-                  view === "grid"
-                    ? { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 16 }
-                    : { display: "flex", flexDirection: "column", gap: 10 }
-                }
+        );
+      }
+
+      /** --- 主程式 --- **/
+      function App() {
+        const [data, setData] = React.useState([]);
+        const [deletedIds, setDeletedIds] = React.useState(() => new Set(JSON.parse(localStorage.getItem(LS_KEY + "_del") || "[]")));
+        const [editedItems, setEditedItems] = React.useState(() => {
+          const raw = localStorage.getItem(LS_KEY + "_edit");
+          try {
+            return new Map(JSON.parse(raw || "[]"));
+          } catch (e) {
+            return new Map();
+          }
+        });
+        const [loading, setLoading] = React.useState(true);
+        const [search, setSearch] = React.useState("");
+        const [detailR, setDetailR] = React.useState(null);
+        const [showAdd, setShowAdd] = React.useState(false);
+        const [editingR, setEditingR] = React.useState(null);
+        const [categoryF, setCategoryF] = React.useState(new Set());
+        const [view, setView] = React.useState("grid");
+
+        const loadData = async (isInit = false) => {
+          try {
+            const json = await fetchWithRetry(`${GAS_URL}?t=${Date.now()}`);
+            if (json.status === "success") setData((json.data || []).map(normalizeRecord));
+          } catch (e) {
+            console.error("載入失敗:", e);
+          } finally {
+            if (isInit) setLoading(false);
+          }
+        };
+
+        React.useEffect(() => {
+          loadData(true);
+          const timer = setInterval(() => loadData(false), 30000);
+          return () => clearInterval(timer);
+        }, []);
+
+        React.useEffect(() => {
+          localStorage.setItem(LS_KEY + "_del", JSON.stringify([...deletedIds]));
+          localStorage.setItem(LS_KEY + "_edit", JSON.stringify(Array.from(editedItems.entries())));
+        }, [deletedIds, editedItems]);
+
+        const handleAction = async (action, r) => {
+          const idStr = String(r.id || r);
+          const record = typeof r === "object" ? normalizeRecord(r) : r;
+          const payload = typeof record === "object" ? record : {};
+          if (action === "add") setData((prev) => [record, ...prev]);
+          if (action === "edit") setEditedItems((prev) => new Map(prev).set(idStr, record));
+          if (action === "delete") {
+            setDeletedIds((prev) => new Set(prev).add(idStr));
+            setData((prev) => prev.filter((x) => String(x.id) !== idStr));
+          }
+          try {
+            await fetchWithRetry(GAS_URL, {
+              method: "POST",
+              mode: "no-cors",
+              headers: { "Content-Type": "text/plain" },
+              body: JSON.stringify({ action, id: idStr, ...payload }),
+            });
+          } catch (e) {
+            console.error(e);
+          }
+        };
+
+        const allData = React.useMemo(() => {
+          const map = new Map();
+          data.forEach((r) => {
+            const idStr = String(r.id);
+            if (deletedIds.has(idStr)) return;
+            const final = normalizeRecord(editedItems.has(idStr) ? editedItems.get(idStr) : r);
+            if (final.name) map.set(final.name, final);
+          });
+          return Array.from(map.values());
+        }, [data, deletedIds, editedItems]);
+
+        const filtered = allData.filter(
+          (r) =>
+            (r.name + (r.district || "") + (r.category || "")).toLowerCase().includes(search.toLowerCase()) &&
+            (categoryF.size === 0 || categoryF.has(r.category)),
+        );
+
+        const handleEdit = (r) => {
+          setEditingR(r);
+        };
+
+        return (
+          <div style={{ minHeight: "100vh", background: "var(--bg)", display: "flex", flexDirection: "column" }}>
+            <nav
+              style={{
+                maxWidth: "1100px",
+                width: "100%",
+                margin: "auto",
+                position: "sticky",
+                top: 0,
+                zIndex: 300,
+                background: "rgba(24,24,24,0.92)",
+                backdropFilter: "blur(20px)",
+                height: 60,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                padding: "0 20px",
+                borderBottom: "1px solid rgba(255,255,255,0.06)",
+              }}
+            >
+              <div style={{ color: "#fff", fontSize: 18, fontWeight: 900 }}>美食口袋名單</div>
+              <button
+                onClick={() => setShowAdd(true)}
+                style={{
+                  padding: "8px 15px",
+                  borderRadius: 9,
+                  background: "var(--red)",
+                  color: "#fff",
+                  border: "none",
+                  fontWeight: 700,
+                  cursor: "pointer",
+                }}
               >
-                {filtered.map((r) =>
-                  view === "grid" ? <GridCard key={r.id} r={r} onOpen={setDetailR} /> : <ListItem key={r.id} r={r} onOpen={setDetailR} />,
-                )}
+                新增
+              </button>
+            </nav>
+            <div
+              style={{
+                maxWidth: 1100,
+                margin: "0 auto",
+                padding: "10px 20px",
+                display: "flex",
+                gap: 6,
+                overflowX: "auto",
+                scrollbarWidth: "none",
+                width: "100%",
+              }}
+            >
+              <CatPill active={categoryF.size === 0} onClick={() => setCategoryF(new Set())}>
+                全部
+              </CatPill>
+              {[...new Set(allData.map((r) => r.category).filter(Boolean))].sort().map((c) => (
+                <CatPill
+                  key={c}
+                  active={categoryF.has(c)}
+                  onClick={() => {
+                    const n = new Set(categoryF);
+                    n.has(c) ? n.delete(c) : n.add(c);
+                    setCategoryF(n);
+                  }}
+                >
+                  {c}
+                </CatPill>
+              ))}
+            </div>
+            <div style={{ padding: "15px 20px", background: "rgba(24,24,24,0.7)", position: "sticky", top: 60, zIndex: 200 }}>
+              <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", gap: 10, alignItems: "center" }}>
+                <div style={{ flex: 1, position: "relative" }}>
+                  <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "rgba(255,255,255,0.3)" }}>
+                    <SearchIc s={15} />
+                  </span>
+                  <input
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="搜尋店名..."
+                    style={{
+                      width: "100%",
+                      padding: "10px 38px",
+                      borderRadius: 10,
+                      background: "rgba(255,255,255,0.1)",
+                      color: "#fff",
+                      border: "none",
+                      outline: "none",
+                    }}
+                  />
+                </div>
+                <div style={{ display: "flex", background: "rgba(255,255,255,0.08)", borderRadius: 10, padding: 3 }}>
+                  <button
+                    onClick={() => setView("grid")}
+                    style={{
+                      padding: 8,
+                      fontSize: 0,
+                      borderRadius: 8,
+                      border: "none",
+                      background: view === "grid" ? "rgba(255,255,255,0.15)" : "transparent",
+                      color: view === "grid" ? "#fff" : "rgba(255,255,255,0.4)",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <GridIc />
+                  </button>
+                  <button
+                    onClick={() => setView("list")}
+                    style={{
+                      padding: 8,
+                      fontSize: 0,
+                      borderRadius: 8,
+                      border: "none",
+                      background: view === "list" ? "rgba(255,255,255,0.15)" : "transparent",
+                      color: view === "list" ? "#fff" : "rgba(255,255,255,0.4)",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <ListIc />
+                  </button>
+                </div>
               </div>
+            </div>
+            <main style={{ flex: 1, padding: "20px", maxWidth: 1100, margin: "0 auto", width: "100%" }}>
+              {loading ? (
+                <div style={{ textAlign: "center", paddingTop: 100 }}>
+                  <Loader2 s={32} />
+                </div>
+              ) : (
+                <div
+                  style={
+                    view === "grid"
+                      ? { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 16 }
+                      : { display: "flex", flexDirection: "column", gap: 10 }
+                  }
+                >
+                  {filtered.map((r) =>
+                    view === "grid" ? <GridCard key={r.id} r={r} onOpen={setDetailR} /> : <ListItem key={r.id} r={r} onOpen={setDetailR} />,
+                  )}
+                </div>
+              )}
+            </main>
+            {detailR && (
+              <DetailModal r={detailR} onClose={() => setDetailR(null)} onDelete={(id) => handleAction("delete", id)} onEdit={handleEdit} />
             )}
-          </main>
-          {detailR && (
-            <DetailModal r={detailR} onClose={() => setDetailR(null)} onDelete={(id) => handleAction("delete", id)} onEdit={handleEdit} />
-          )}
-          {showAdd && (
-            <FormModal
-              onClose={() => setShowAdd(false)}
-              onSave={(r) => handleAction("add", r)}
-              existingNames={new Set(allData.map((r) => r.name))}
-              initialData={null}
-            />
-          )}
-          {editingR && (
-            <FormModal
-              onClose={() => setEditingR(null)}
-              onSave={(r) => handleAction("edit", r)}
-              existingNames={new Set(allData.map((r) => r.name))}
-              initialData={editingR}
-            />
-          )}
-        </div>
-      );
-    }
+            {showAdd && (
+              <FormModal
+                onClose={() => setShowAdd(false)}
+                onSave={(r) => handleAction("add", r)}
+                existingNames={new Set(allData.map((r) => r.name))}
+                initialData={null}
+              />
+            )}
+            {editingR && (
+              <FormModal
+                onClose={() => setEditingR(null)}
+                onSave={(r) => handleAction("edit", r)}
+                existingNames={new Set(allData.map((r) => r.name))}
+                initialData={editingR}
+              />
+            )}
+          </div>
+        );
+      }
 
-    function CatPill({ active, onClick, children }) {
-      return (
-        <button
-          onClick={onClick}
-          style={{
-            padding: "7px 16px",
-            borderRadius: 99,
-            border: "none",
-            background: active ? "var(--black)" : "rgba(255,255,255,0.08)",
-            color: active ? "#fff" : "rgba(255,255,255,0.65)",
-            fontSize: 13,
-            fontWeight: 600,
-            cursor: "pointer",
-            transition: "all 0.15s",
-            whiteSpace: "nowrap",
-            flexShrink: 0,
-          }}
-        >
-          {children}
-        </button>
-      );
-    }
+      function CatPill({ active, onClick, children }) {
+        return (
+          <button
+            onClick={onClick}
+            style={{
+              padding: "7px 16px",
+              borderRadius: 99,
+              border: "none",
+              background: active ? "var(--black)" : "rgba(255,255,255,0.08)",
+              color: active ? "#fff" : "rgba(255,255,255,0.65)",
+              fontSize: 13,
+              fontWeight: 600,
+              cursor: "pointer",
+              transition: "all 0.15s",
+              whiteSpace: "nowrap",
+              flexShrink: 0,
+            }}
+          >
+            {children}
+          </button>
+        );
+      }
 
-    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
-  </script>
-</body>
-
+      ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+    </script>
+  </body>
 </html>
