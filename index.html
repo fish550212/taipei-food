@@ -23,6 +23,10 @@
       }
 
       :root {
+        --card-padding: 30px 25px 40px 25px;
+        --card-radius: 30px;
+        --btn-radius: 12px;
+        --btn-font-size: 14px;
         --bg: #181818;
         --bg2: #222222;
         --card: #ffffff;
@@ -131,6 +135,53 @@
           opacity: 1;
           transform: scale(1) translateY(0);
         }
+      }
+
+      /* --- 彈出視窗響應式樣式 --- */
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        justify-content: center;
+        align-items: flex-end; /* 手機版預設：靠下 */
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        animation: fadeIn 0.18s ease;
+      }
+
+      .modal-content {
+        position: relative;
+        background: var(--card);
+        width: 100%;
+        border-radius: 24px 24px 0 0; /* 手機版圓角 */
+        animation: slideUp 0.26s cubic-bezier(0.22, 1, 0.36, 1);
+        box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.22);
+        overflow: hidden;
+      }
+
+      @media (min-width: 768px) {
+        .modal-overlay {
+          align-items: center; /* 電腦版與平板：水平垂直置中 */
+          padding: 20px;
+        }
+        .modal-content {
+          border-radius: 24px; /* 電腦版：全圓角 */
+          max-height: 90vh;
+          overflow-y: auto;
+        }
+      }
+
+      /* 隱藏原生下拉箭頭 */
+      .hide-arrow {
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+      }
+
+      /* 搜尋框 placeholder 顏色調亮 */
+      .search-input::placeholder {
+        color: rgba(255, 255, 255, 0.6);
+        opacity: 1; /* 確保在不同瀏覽器一致 */
       }
     </style>
   </head>
@@ -398,7 +449,6 @@
               color: "#fff",
             }}
           >
-            <span style={{ width: 5, height: 5, borderRadius: 99, background: "rgba(255,255,255,0.75)", display: "inline-block" }} />
             {isOpen ? "營業中" : "休息中"}
           </span>
         );
@@ -936,7 +986,7 @@
             onClick={() => onOpen(r)}
             style={{
               background: "var(--card)",
-              borderRadius: 20,
+              borderRadius: "var(--card-radius)",
               overflow: "hidden",
               cursor: "pointer",
               boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
@@ -1052,41 +1102,27 @@
         return (
           <div
             onClick={onClose}
+            className="modal-overlay"
             style={{
-              position: "fixed",
-              inset: 0,
               zIndex: 600,
               background: "rgba(10,10,10,0.75)",
-              backdropFilter: "blur(8px)",
-              display: "flex",
-              alignItems: "flex-end",
-              justifyContent: "center",
-              animation: "fadeIn 0.18s ease",
             }}
           >
             <div
               onClick={(e) => e.stopPropagation()}
+              className="modal-content"
               style={{
                 background: isCustom ? "#FFF8F2" : "var(--card)",
-                borderRadius: "24px 24px 0 0",
-                width: "100%",
                 maxWidth: 500,
-                maxHeight: "92vh",
-                overflow: "auto",
-                animation: "slideUp 0.26s cubic-bezier(0.22,1,0.36,1)",
-                boxShadow: "0 -8px 40px rgba(0,0,0,0.22)",
-                paddingBottom: 40,
+                padding: "0 0 40px 0",
               }}
             >
-              <div style={{ display: "flex", justifyContent: "center", padding: "14px 0" }}>
-                <div style={{ width: 38, height: 4, borderRadius: 99, background: "rgba(0,0,0,0.1)" }} />
-              </div>
               <div
                 style={{
                   height: 210,
                   position: "relative",
-                  margin: "0 16px",
-                  borderRadius: 18,
+                  margin: "auto",
+                  borderRadius: 0,
                   overflow: "hidden",
                   background: "var(--card-bg)",
                   display: "flex",
@@ -1162,10 +1198,10 @@
                       alignItems: "center",
                       justifyContent: "center",
                       padding: "13px 0",
-                      borderRadius: 12,
+                      borderRadius: "var(--btn-radius)",
                       background: "var(--red)",
                       color: "#fff",
-                      fontSize: 14,
+                      fontSize: "var(--btn-font-size)",
                       fontWeight: 700,
                       textDecoration: "none",
                     }}
@@ -1310,34 +1346,41 @@
         return (
           <div
             onClick={onClose}
+            className="modal-overlay"
             style={{
-              position: "fixed",
-              inset: 0,
               zIndex: 700,
               background: "rgba(10,10,10,0.78)",
-              backdropFilter: "blur(8px)",
-              display: "flex",
-              alignItems: "flex-end",
-              justifyContent: "center",
-              animation: "fadeIn 0.15s ease",
             }}
           >
             <div
               onClick={(e) => e.stopPropagation()}
+              className="modal-content"
               style={{
-                background: "var(--card)",
-                borderRadius: "24px 24px 0 0",
-                width: "100%",
                 maxWidth: 480,
-                maxHeight: "92vh",
-                display: "flex",
-                flexDirection: "column",
-                animation: "slideUp 0.24s cubic-bezier(0.22,1,0.36,1)",
-                boxShadow: "0 -8px 40px rgba(0,0,0,0.22)",
-                overflow: "hidden",
               }}
             >
-              <div style={{ padding: "20px", overflowY: "auto" }}>
+              <button
+                onClick={onClose}
+                style={{
+                  position: "absolute",
+                  top: 16,
+                  right: 16,
+                  width: 32,
+                  height: 32,
+                  borderRadius: 99,
+                  border: "none",
+                  background: "rgba(0,0,0,0.05)",
+                  color: "var(--t2)",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  zIndex: 10,
+                }}
+              >
+                <XIc s={14} />
+              </button>
+              <div style={{ padding: "var(--card-padding)", overflowY: "auto" }}>
                 <div style={{ fontSize: 18, fontWeight: 800, marginBottom: 15 }}>新增餐廳</div>
                 <label style={{ fontSize: 11, fontWeight: 500, color: "var(--t3)", display: "block", marginBottom: 5 }}>自動辨識餐廳資訊</label>
                 <div style={{ display: "flex", gap: 8, marginBottom: 15 }}>
@@ -1351,8 +1394,9 @@
                     onClick={handleAnalyze}
                     disabled={analyzing}
                     style={{
+                      fontSize:"var(--btn-font-size)",
                       padding: "0 15px",
-                      borderRadius: 9,
+                      borderRadius: "var(--btn-radius)",
                       background: "#333",
                       color: "#fff",
                       fontWeight: 700,
@@ -1370,7 +1414,9 @@
                   placeholder="店名 *"
                   style={{ ...fieldS, borderColor: errors.name ? "red" : "#eee" }}
                 />
-                {errors.name && <div style={{ color: "var(--red)", fontSize: 12, marginTop: -5, marginBottom: 10, paddingLeft: 4 }}>{errors.name}</div>}
+                {errors.name && (
+                  <div style={{ color: "var(--red)", fontSize: 12, marginTop: -5, marginBottom: 10, paddingLeft: 4 }}>{errors.name}</div>
+                )}
                 <div style={{ display: "flex", gap: 10 }}>
                   <select
                     value={category}
@@ -1490,34 +1536,41 @@
         return (
           <div
             onClick={onClose}
+            className="modal-overlay"
             style={{
-              position: "fixed",
-              inset: 0,
               zIndex: 700,
               background: "rgba(10,10,10,0.78)",
-              backdropFilter: "blur(8px)",
-              display: "flex",
-              alignItems: "flex-end",
-              justifyContent: "center",
-              animation: "fadeIn 0.15s ease",
             }}
           >
             <div
               onClick={(e) => e.stopPropagation()}
+              className="modal-content"
               style={{
-                background: "var(--card)",
-                borderRadius: "24px 24px 0 0",
-                width: "100%",
                 maxWidth: 480,
-                maxHeight: "92vh",
-                display: "flex",
-                flexDirection: "column",
-                animation: "slideUp 0.24s cubic-bezier(0.22,1,0.36,1)",
-                boxShadow: "0 -8px 40px rgba(0,0,0,0.22)",
-                overflow: "hidden",
               }}
             >
-              <div style={{ padding: "20px", overflowY: "auto" }}>
+              <button
+                onClick={onClose}
+                style={{
+                  position: "absolute",
+                  top: 16,
+                  right: 16,
+                  width: 32,
+                  height: 32,
+                  borderRadius: 99,
+                  border: "none",
+                  background: "rgba(0,0,0,0.05)",
+                  color: "var(--t2)",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  zIndex: 10,
+                }}
+              >
+                <XIc s={14} />
+              </button>
+              <div style={{ padding: "var(--card-padding)", overflowY: "auto" }}>
                 <div style={{ fontSize: 18, fontWeight: 800, marginBottom: 15 }}>編輯餐廳</div>
                 <input
                   value={name}
@@ -1525,12 +1578,246 @@
                   placeholder="店名 *"
                   style={{ ...fieldS, borderColor: errors.name ? "red" : "#eee" }}
                 />
-                {errors.name && <div style={{ color: "var(--red)", fontSize: 12, marginTop: -5, marginBottom: 10, paddingLeft: 4 }}>{errors.name}</div>}
+                {errors.name && (
+                  <div style={{ color: "var(--red)", fontSize: 12, marginTop: -5, marginBottom: 10, paddingLeft: 4 }}>{errors.name}</div>
+                )}
+                <div style={{ display: "flex", gap: 10 }}>
+                  <select value={category} onChange={(e) => setCategory(e.target.value)} style={fieldS}>
+                    <option value="" disabled>
+                      類型
+                    </option>
+                    {CATS.map((c) => (
+                      <option key={c} value={c}>
+                        {c}
+                      </option>
+                    ))}
+                  </select>
+                  <select value={district} onChange={(e) => setDistrict(e.target.value)} style={fieldS}>
+                    <option value="" disabled>
+                      區域
+                    </option>
+                    {DISTS.map((d) => (
+                      <option key={d} value={d}>
+                        {d}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 10 }}>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontSize: 10 }}>評分</label>
+                    <input
+                      type="number"
+                      step="0.1"
+                      value={rating}
+                      onChange={(e) => setRating(e.target.value)}
+                      style={{ ...fieldS, marginBottom: 0 }}
+                    />
+                  </div>
+                  <div style={{ flex: 2 }}>
+                    <label style={{ fontSize: 10 }}>營業時間</label>
+                    <input
+                      value={openHours}
+                      onChange={(e) => setOpenHours(e.target.value)}
+                      placeholder="週一: 11:00-21:00"
+                      style={{ ...fieldS, marginBottom: 0 }}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label style={{ fontSize: 10 }}>Google地圖連結</label>
+                  <input value={mapLink} onChange={(e) => setMapLink(e.target.value)} placeholder="輸入Google地圖連結" style={fieldS} />
+                </div>
+                <textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="筆記..." style={{ ...fieldS, height: 80 }} />
+                <button
+                  onClick={doConfirm}
+                  style={{
+                    width: "100%",
+                    padding: "14px",
+                    borderRadius: "var(--btn-radius)",
+                    background: "var(--red)",
+                    fontSize:"var(--btn-font-size)",
+                    color: "#fff",
+                    fontWeight: 800,
+                    border: "none",
+                    cursor: "pointer",
+                  }}
+                >
+                  確認修改
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      function FormModal({ onClose, onSave, existingNames, initialData }) {
+        const isEdit = !!initialData;
+        const [name, setName] = React.useState(initialData?.name || "");
+        const [category, setCategory] = React.useState(initialData?.category || "");
+        const [district, setDistrict] = React.useState(initialData?.district || "");
+        const [rating, setRating] = React.useState(initialData?.rating || "4.0");
+        const [openHours, setOpenHours] = React.useState(initialData?.opening_hours || "");
+        const [mapLink, setMapLink] = React.useState(initialData?.map_link || "");
+        const [note, setNote] = React.useState(initialData?.note || "");
+        const [errors, setErrors] = React.useState({});
+        const [analyzing, setAnalyzing] = React.useState(false);
+        const [analyzeError, setAnalyzeError] = React.useState("");
+        const [categoryUnmatched, setCategoryUnmatched] = React.useState(false);
+
+        const handleAnalyze = async () => {
+          if (!mapLink.trim()) return;
+          setAnalyzing(true);
+          setAnalyzeError("");
+          try {
+            const res = await fetchWithRetry("https://api-taipei-food.xmoneydoge.com/analyze", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ url: mapLink }),
+            });
+            if (res.error) throw new Error(res.error);
+            if (res.name) setName(res.name);
+            const aiCategory = normalizeCategory(res.category);
+            if (aiCategory) {
+              setCategory(aiCategory);
+              setCategoryUnmatched(false);
+            } else {
+              setCategoryUnmatched(true);
+            }
+            const aiDistrict = normalizeDistrict(
+              res.district,
+              res["行政區"],
+              res["區域"],
+              res.address,
+              res["地址"],
+              res.formatted_address,
+              res.vicinity,
+              res.address_components,
+            );
+            if (aiDistrict) setDistrict(aiDistrict);
+            if (res.rating) setRating(parseFloat(res.rating).toFixed(1));
+            if (res.openHours) setOpenHours(res.openHours);
+            if (res.note) setNote(res.note);
+          } catch (e) {
+            console.error(e);
+            setAnalyzeError(e.message || "解析失敗，請確認後端是否啟動");
+          } finally {
+            setAnalyzing(false);
+          }
+        };
+
+        function doConfirm() {
+          if (!name.trim()) return setErrors({ name: "必填" });
+          if (existingNames.has(name) && (!isEdit || initialData.name !== name)) return setErrors({ name: "已有此餐廳" });
+          const finalCat = normalizeCategory(category) || "其他";
+          onSave({
+            id: initialData?.id || "u_" + Date.now(),
+            name: name.trim(),
+            district: district || "其他",
+            category: finalCat,
+            type: finalCat,
+            類型: finalCat,
+            餐廳類型: finalCat,
+            rating: parseFloat(rating).toFixed(1),
+            opening_hours: openHours.trim() || "未填寫",
+            is_open: "DYNAMIC",
+            emoji: EMOJIS[finalCat] || "🍴",
+            note: note.trim(),
+            map_link: mapLink.trim() || "#",
+            source: "custom",
+          });
+          onClose();
+        }
+
+        const fieldS = {
+          width: "100%",
+          padding: "10px 12px",
+          borderRadius: 9,
+          border: "1.5px solid #eee",
+          fontSize: 13,
+          background: "#f9f9f9",
+          outline: "none",
+          marginBottom: 10,
+        };
+
+        return (
+          <div
+            onClick={onClose}
+            className="modal-overlay"
+            style={{
+              zIndex: 700,
+              background: "rgba(10,10,10,0.78)",
+            }}
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="modal-content"
+              style={{
+                maxWidth: 480,
+              }}
+            >
+              <button
+                onClick={onClose}
+                style={{
+                  position: "absolute",
+                  top: 16,
+                  right: 16,
+                  width: 32,
+                  height: 32,
+                  borderRadius: 99,
+                  border: "none",
+                  background: "rgba(0,0,0,0.05)",
+                  color: "var(--t2)",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  zIndex: 10,
+                }}
+              >
+                <XIc s={14} />
+              </button>
+              <div style={{ padding: "20px", overflowY: "auto" }}>
+                <div style={{ fontSize: 18, fontWeight: 800, marginBottom: 15 }}>新增/編輯餐廳</div>
+                <label style={{ fontSize: 11, fontWeight: 500, color: "var(--t3)", display: "block", marginBottom: 5 }}>自動辨識餐廳資訊</label>
+                <div style={{ display: "flex", gap: 8, marginBottom: 15 }}>
+                  <input
+                    value={mapLink}
+                    onChange={(e) => setMapLink(e.target.value)}
+                    placeholder="貼上Google地圖連結"
+                    style={{ ...fieldS, marginBottom: 0, flex: 1 }}
+                  />
+                  <button
+                    onClick={handleAnalyze}
+                    disabled={analyzing}
+                    style={{
+                      padding: "0 15px",
+                      borderRadius: 9,
+                      background: "#333",
+                      color: "#fff",
+                      fontWeight: 700,
+                      border: "none",
+                      cursor: "pointer",
+                    }}
+                  >
+                    {analyzing ? <Loader2 s={14} /> : "查詢"}
+                  </button>
+                </div>
+                {analyzeError && <div style={{ color: "var(--red)", fontSize: 12, marginTop: -10, marginBottom: 10 }}>{analyzeError}</div>}
+                <input
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="店名 *"
+                  style={{ ...fieldS, borderColor: errors.name ? "red" : "#eee" }}
+                />
                 <div style={{ display: "flex", gap: 10 }}>
                   <select
                     value={category}
-                    onChange={(e) => setCategory(e.target.value)}
-                    style={fieldS}
+                    onChange={(e) => {
+                      setCategory(e.target.value);
+                      setCategoryUnmatched(false);
+                    }}
+                    style={{ ...fieldS, borderColor: categoryUnmatched ? "#f472b6" : "#eee", background: categoryUnmatched ? "#fff0f8" : "#f9f9f9" }}
                   >
                     <option value="" disabled>
                       類型
@@ -1573,12 +1860,6 @@
                     />
                   </div>
                 </div>
-                <input
-                  value={mapLink}
-                  onChange={(e) => setMapLink(e.target.value)}
-                  placeholder="Google地圖連結"
-                  style={fieldS}
-                />
                 <textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="筆記..." style={{ ...fieldS, height: 80 }} />
                 <button
                   onClick={doConfirm}
@@ -1590,10 +1871,9 @@
                     color: "#fff",
                     fontWeight: 800,
                     border: "none",
-                    cursor: "pointer",
                   }}
                 >
-                  確認修改
+                  儲存
                 </button>
               </div>
             </div>
@@ -1719,20 +1999,26 @@
                 borderBottom: "1px solid rgba(255,255,255,0.06)",
               }}
             >
-              <div style={{ color: "#fff", fontSize: 18, fontWeight: 900 }}>美食口袋名單</div>
+              <div style={{ color: "#fff", fontSize: 20, fontWeight: 900 }}>美食口袋名單</div>
               <button
                 onClick={() => setShowAdd(true)}
                 style={{
-                  padding: "8px 15px",
-                  borderRadius: 9,
+                  padding: "9px 15px",
+                  borderRadius:"var(--btn-radius)",
                   background: "var(--red)",
                   color: "#fff",
                   border: "none",
                   fontWeight: 700,
                   cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 4
                 }}
               >
-                新增
+                <PlusIc s={16} />
+                <span style={{
+                  fontSize: "var(--btn-font-size)",
+                }}>新增</span>
               </button>
             </nav>
             <div
@@ -1764,7 +2050,7 @@
                 </CatPill>
               ))}
             </div>
-            <div style={{ padding: "15px 20px", background: "rgba(24,24,24,0.7)", position: "sticky", top: 60, zIndex: 200 }}>
+            <div style={{ padding: "15px 20px", background: "rgba(24,24,24,0.7)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)", position: "sticky", top: 60, zIndex: 200 }}>
               <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
                 <div style={{ flex: 1, minWidth: 180, position: "relative" }}>
                   <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "rgba(255,255,255,0.3)" }}>
@@ -1773,7 +2059,8 @@
                   <input
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    placeholder="搜尋店名..."
+                    placeholder="搜尋店名、區域、類型"
+                    className="search-input"
                     style={{
                       width: "100%",
                       padding: "10px 38px",
@@ -1788,6 +2075,7 @@
                 <select
                   value={sortOrder}
                   onChange={(e) => setSortOrder(e.target.value)}
+                  className="hide-arrow"
                   style={{
                     height: 38,
                     padding: "0 10px",
@@ -1889,7 +2177,7 @@
               padding: "7px 16px",
               borderRadius: 99,
               border: "none",
-              background: active ? "var(--black)" : "rgba(255,255,255,0.08)",
+              background: active ? "var(--red)" : "rgba(255,255,255,0.08)",
               color: active ? "#fff" : "rgba(255,255,255,0.65)",
               fontSize: 13,
               fontWeight: 600,
